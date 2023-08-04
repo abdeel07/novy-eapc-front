@@ -1,0 +1,135 @@
+[
+    {
+      "realisation": 90,
+     "status": "current",
+      "type_entretien": "Performance",
+      "collaborateur": "Redouane MRABET",
+      "duree": "4 months",
+      "objectif_name": "finish the project"
+    },
+    {
+      "realisation": 99,
+      "type_entretien": "Perfomance",
+      "duree": "3 months",
+      "status": "done",
+      "collaborateur": "Akhenchi Asmae",
+      "objectif_name": "Data science & cloud computing option"
+
+    },
+    {
+      "realisation": 59,
+      "type_entretien": "Perfomance",
+      "collaborateur": "Youssef Roy",
+      "status": "rejected",
+      "duree": "2 months",
+      "objectif_name": "intership"
+  
+    },
+    {
+        "realisation": 99,
+        "type_entretien": "Perfomance",
+        "duree": "2 months",
+        "status": "accepted",
+        "collaborateur": "Akhenchi Asmae",
+        "objectif_name": "Data science & cloud computing option"
+  
+      },
+      {
+        "realisation": 99,
+        "type_entretien": "Perfomance",
+        "duree": "2 months",
+        "status": "accepted",
+        "collaborateur": "Akhenchi Asmae",
+        "objectif_name": "Data science & cloud computing option"
+  
+      },
+      {
+        "realisation": 99,
+        "type_entretien": "Perfomance",
+        "duree": "2 months",
+        "status": "accepted",
+        "collaborateur": "Akhenchi Asmae",
+        "objectif_name": "Data science & cloud computing option"
+  
+      },
+      {
+        "realisation": 99,
+        "type_entretien": "Perfomance",
+        "duree": "2 months",
+        "status": "accepted",
+        "collaborateur": "Akhenchi Asmae",
+        "objectif_name": "Data science & cloud computing option"
+  
+      },
+      {
+        "realisation": 99,
+        "type_entretien": "Perfomance",
+        "duree": "2 months",
+        "status": "accepted",
+        "collaborateur": "Akhenchi Asmae",
+        "objectif_name": "Data science & cloud computing option"
+  
+      },
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+      
+    }
+    ,
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+    }
+    ,
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+    }
+    ,
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+    }
+    ,
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+    }
+    ,
+    {
+      "realisation": 67,
+      "type_entretien": "Evaluation",
+      "status": "resigned",
+      "duree": "2 Months",
+      "collaborateur": "Salah Leonard",
+      "objectif_name": "Summer intership"
+  
+    }
+
+
+  ]
