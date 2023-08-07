@@ -33,7 +33,7 @@ const ShowObjectives = () => {
     });
 
   const handleChange = (event, newPage) => {
-    setPage(newPage - 1); 
+    setPage(newPage - 1);
   };
 
   return (
