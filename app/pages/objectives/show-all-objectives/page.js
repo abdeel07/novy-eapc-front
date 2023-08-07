@@ -17,6 +17,7 @@ import CustomDatePicker from "../../../components/datePicker";
 import AddButton from "@/app/components/buttons/AddButton";
 import ExportButton from "@/app/components/buttons/exportButton/ExportButton";
 import ExportForm from "@/app/components/forms/objective/exportObjective";
+import { CircularProgress, Skeleton } from "@mui/material";
 const ShowObjectives = () => {
   let [page, setPage] = useState(0);
 
@@ -100,7 +101,16 @@ const ShowObjectives = () => {
         }}
       >
         <Typography variant="h4" component="h1" style={{ fontWeight: 500 }}>
-          {data?.totalElements} Objectives
+          {isLoading ? (
+            <Skeleton
+              sx={{ bgcolor: "grey.900" }}
+              variant="text"
+              width={200}
+              height={50}
+            />
+          ) : (
+            data?.totalElements + " Objectives"
+          )}
         </Typography>
         <Box
           sx={{
@@ -124,31 +134,43 @@ const ShowObjectives = () => {
       >
         <LeftModal button={<ExportButton />} form={<ExportForm />} />
       </Grid>
-      <Grid
-        sx={{
-          width: "100%",
-          marginTop: "20px",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box>
-          <TableObjectives rows={data?.content} />
-        </Box>
-        <Box
-          style={{
-            display: "flex",
+
+      {isLoading ? (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress
+            style={{ width: "70px", height: "70px" }}
+            color="info"
+          />
+        </div>
+      ) : isError ? (
+        <div>Error: {error.message}</div>
+      ) : (
+        <Grid
+          sx={{
+            width: "100%",
+            marginTop: "20px",
             justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <CustomPagination
-            count={data?.totalPages} // Replace "totalPages" with the actual property name from the backend response
-            page={data?.currentPage + 1} // Replace "currentPage" with the actual property name from the backend response
-            handleChange={handleChange}
-          />
-        </Box>
-      </Grid>
+          <Box>
+            <TableObjectives rows={data?.content} />
+          </Box>
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CustomPagination
+              count={data?.totalPages} // Replace "totalPages" with the actual property name from the backend response
+              page={data?.currentPage + 1} // Replace "currentPage" with the actual property name from the backend response
+              handleChange={handleChange}
+            />
+          </Box>
+        </Grid>
+      )}
     </Grid>
   );
 };
