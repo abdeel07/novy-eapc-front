@@ -13,7 +13,7 @@ const StatusButton = ({textButton}) => {
         borderRadius: "6px",
         padding:"0px 20px",
         height:"32px",
-        width:"60%",
+        width:"90%",
         textTransform: "none", // Set the text transform to none to keep lowercase letters
         }}
         >
