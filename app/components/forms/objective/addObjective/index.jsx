@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react'
+import React, { } from 'react'
 
 
 // ** MUI Imports
@@ -10,13 +10,9 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import InputAdornment from '@mui/material/InputAdornment'
 import Select from '@mui/material/Select'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,12 +22,11 @@ import Textarea from '@mui/joy/Textarea';
 
 
 // ** Icons Imports
-import EyeOutline from 'mdi-material-ui/EyeOutline'
-import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { postRequest } from '@/app/utils/api';
 import { useFormik } from 'formik';
+import { FormHelperText } from '@mui/material'
 
 const FormObjective = () => {
 
@@ -42,11 +37,9 @@ const FormObjective = () => {
   const handleSubmit = async (values, event) => {
     event.preventDefault();
     const formData = values;
-    console.log('formData');
-    console.log(formData);
+    
     try {
-      await mutation.mutateAsync(formData); // Start the mutation with the form data
-      // Reset the form after successful submission (optional)
+      await mutation.mutateAsync(formData);
       event.target.reset();
     } catch (error) {
       console.error('Error submitting form:', error.message);
@@ -55,6 +48,25 @@ const FormObjective = () => {
 
   const formik = useFormik({
     initialValues: { title: '', interviewType: '', collaboratorId: '', startDate: null, endDate: null, achievement: '', status: '', comment: '' },
+
+    validate: (values) => {
+      const errors = {};
+
+      if (!values.startDate) {
+        errors.startDate = 'Start Date is required';
+      }
+
+      if (!values.endDate) {
+        errors.endDate = 'End Date is required';
+      }
+
+      if (values.startDate && values.endDate && values.startDate >= values.endDate) {
+        errors.endDate = 'End Date must be greater than Start Date';
+      }
+
+      return errors;
+    },
+
     onSubmit: values => {
       handleSubmit(values, event)
     },
@@ -69,7 +81,7 @@ const FormObjective = () => {
         <CardContent>
           <Grid container spacing={5}>
             <Grid item xs={12} sm={12}>
-              <TextField name='title' fullWidth label='Nom Objectif' placeholder='...' onChange={formik.handleChange}
+              <TextField required name='title' fullWidth label='Nom Objectif' placeholder='...' onChange={formik.handleChange}
                 value={formik.values.title} />
             </Grid>
 
@@ -77,6 +89,7 @@ const FormObjective = () => {
               <FormControl fullWidth>
                 <InputLabel >Type Entretien</InputLabel>
                 <Select
+                  required
                   label='Country'
                   defaultValue=''
                   id='form-layouts-separator-select'
@@ -95,6 +108,7 @@ const FormObjective = () => {
               <FormControl fullWidth>
                 <InputLabel >Affecté à</InputLabel>
                 <Select
+                  required
                   label='Country'
                   defaultValue=''
                   id='form-layouts-separator-select'
@@ -111,31 +125,34 @@ const FormObjective = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={formik.touched.startDate && formik.errors.startDate}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker name='startDate' fullWidth label="Date debut"
+                  <DatePicker required name='startDate' fullWidth label="Date debut"
                     onChange={(date) => formik.setFieldValue('startDate', date ? date : null)}
                     value={formik.values.startDate} />
                 </LocalizationProvider>
+                {formik.touched.startDate && formik.errors.startDate && <FormHelperText>{formik.errors.startDate}</FormHelperText>}
               </FormControl>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={formik.touched.endDate && formik.errors.endDate}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker name='endDate' label="Date fin" onChange={(date) => formik.setFieldValue('endDate', date, true)}
+                  <DatePicker required name='endDate' label="Date fin" onChange={(date) => formik.setFieldValue('endDate', date, true)}
                     value={formik.values.endDate} />
                 </LocalizationProvider>
+                {formik.touched.endDate && formik.errors.endDate && <FormHelperText>{formik.errors.endDate}</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField name='achievement' type="number" fullWidth label='Réalisatioin en %' placeholder='...' onChange={formik.handleChange}
+              <TextField required name='achievement' type="number" fullWidth label='Réalisatioin en %' placeholder='...' onChange={formik.handleChange}
                 value={formik.values.achievement} />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel >Status</InputLabel>
                 <Select
+                  required
                   label='Country'
                   defaultValue=''
                   id='form-layouts-separator-select'

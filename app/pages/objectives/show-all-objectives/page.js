@@ -3,14 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import NotificationDropdown from "../../../components/notification";
-import TableObjectives from "../../../components/tables/TableObjectives";
+import TableObjectives from "@/app/components/tables/objectives";
 import FiltreButton from "../../../components/buttons/FiltreButton";
 import CustomPagination from "../../../components/pagination/CustomPagination";
-import { default as rows } from "../../../constantes/data.json";
-import usePagination from "../../../components/pagination/Pagination";
 import LeftModal from "../../../components/modals";
 import FormObjective from "@/app/components/forms/objective/addObjective";
 import CustomDatePicker from "../../../components/datePicker";
@@ -18,18 +15,15 @@ import AddButton from "@/app/components/buttons/AddButton";
 import ExportButton from "@/app/components/buttons/exportButton/ExportButton";
 import ExportForm from "@/app/components/forms/objective/exportObjective";
 import { CircularProgress, Skeleton } from "@mui/material";
+import { getRequest } from "@/app/utils/api";
+
 const ShowObjectives = () => {
   let [page, setPage] = useState(0);
-
-  const fetchObjectives = (page = 0) =>
-    fetch("http://localhost:8080/api/objective/?page=" + page + "&size=2").then(
-      (res) => res.json()
-    );
 
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery({
       queryKey: ["objectives", page],
-      queryFn: () => fetchObjectives(page),
+      queryFn: () => getRequest('objective/?page=' + page + '&size=2'),
       keepPreviousData: true,
     });
 
@@ -85,7 +79,7 @@ const ShowObjectives = () => {
             }}
           >
             {/* modal form */}
-            <LeftModal button={<AddButton />} form={<FormObjective />} />
+            <LeftModal button={<AddButton text="Ajouter un objectif"/>} form={<FormObjective />} />
           </Box>
         </Box>
       </Grid>
@@ -132,14 +126,14 @@ const ShowObjectives = () => {
         xs={12}
         style={{ display: "flex", flexDirection: "column", alignItems: "end" }}
       >
-        <LeftModal button={<ExportButton />} form={<ExportForm />} />
+        <LeftModal button={<ExportButton text="Exporter Tous les Objectives" />} form={<ExportForm />} />
       </Grid>
 
       {isLoading ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <CircularProgress
-            style={{ width: "70px", height: "70px" }}
-            color="info"
+            style={{ width: "70px", height: "70px",color:"rgb(255, 6, 126)" }}
+            
           />
         </div>
       ) : isError ? (
@@ -164,8 +158,8 @@ const ShowObjectives = () => {
             }}
           >
             <CustomPagination
-              count={data?.totalPages} // Replace "totalPages" with the actual property name from the backend response
-              page={data?.currentPage + 1} // Replace "currentPage" with the actual property name from the backend response
+              count={data?.totalPages}
+              page={data?.currentPage + 1}
               handleChange={handleChange}
             />
           </Box>
