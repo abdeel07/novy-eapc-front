@@ -6,12 +6,12 @@ import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper';
 import StatusButton from '../../buttons/StatusButton';
 import UpdateValidateReject from '../../icons/UpdateValidateReject';
-const TableObjectives = ({rows}) => {
+const TableObjectives = ({ rows }) => {
   return (
     <div>
 
 
-      {rows.map((row) => (
+      {rows?.map((row) => (
         <Paper
           key={row.id}
           elevation={0}
@@ -50,7 +50,7 @@ const TableObjectives = ({rows}) => {
             </Box>
             <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '10px' } }}>
               <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Actions</Typography>
-              <Typography  style={{ textAlign: '-webkit-center' }}>
+              <Typography style={{ textAlign: '-webkit-center' }}>
                 <UpdateValidateReject />
               </Typography>
             </Box>
