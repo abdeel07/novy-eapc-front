@@ -131,7 +131,7 @@ export default function LeftMenu() {
           {routes.map((item, index) => (
 
 
-          <Link  href={item.path} style={{ textDecoration: 'none',color:"black "}} key={item.id}>
+          <Link  href={item.path} style={{ textDecoration: 'none',color:"black ",marginLeft:"25px"}} key={item.id}>
             <MenuItem
                   selected={activeRoute(item.path, router.pathname)}
                   onClick={() => handleMenuItemClick(item.id)}
@@ -139,10 +139,12 @@ export default function LeftMenu() {
                     color: activeRoute(item.path, router.pathname) ? 'rgb(255, 6, 126)' : 'black',
                     textDecoration: 'none',
                     backgroundColor: clickedItemId === item.id ? 'lightgray' : 'transparent',
+                   
+                    
                   }}
               >
               <ListItem button key={item.id}  >
-                <ListItemIcon style={{marginRight:12,color:"rgb(255, 6, 126)"}}> {item.icon} </ListItemIcon>
+                <ListItemIcon style={{marginRight:17.5,color:"rgb(255, 6, 126)",marginLeft:-7}}> {item.icon} </ListItemIcon>
                     <ListItemText primary={item.label} />
                 </ListItem>
               </MenuItem>
