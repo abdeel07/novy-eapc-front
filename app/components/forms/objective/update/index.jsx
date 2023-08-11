@@ -1,11 +1,26 @@
 import { putRequest } from '@/app/utils/api';
+
+import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import CardHeader from '@mui/material/CardHeader'
+import InputLabel from '@mui/material/InputLabel'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import Textarea from '@mui/joy/Textarea';
+
 import { useMutation } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import React from 'react'
 
 function UpdateObjective({ objective, id }) {
 
-    const mutation = useMutation((formData) => putRequest('objective/' + { id }, formData));
+    const mutation = useMutation((formData) => putRequest('objective/' + id , formData));
 
     // Handle form submission
     const handleSubmit = async (values, event) => {
@@ -22,14 +37,14 @@ function UpdateObjective({ objective, id }) {
 
     const formik = useFormik({
         initialValues: {
-            title: objective.title,
-            interviewType: objective.interviewType,
-            collaboratorId: objective.collaboratorId,
-            startDate: objective.startDate,
-            endDate: startDate.endDate,
-            achievement: startDate.achievement,
-            status: startDate.status,
-            comment: startDate.comment
+            title: objective?.title,
+            interviewType: objective?.interviewType,
+            collaboratorId: objective?.collaboratorId,
+            startDate: objective?.startDate,
+            endDate: objective?.endDate,
+            achievement: objective?.achievement,
+            status: objective?.status,
+            comment: objective?.comment
         },
 
         validate: (values) => {
@@ -107,7 +122,7 @@ function UpdateObjective({ objective, id }) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} sm={6}>
                             <FormControl fullWidth error={formik.touched.startDate && formik.errors.startDate}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker required name='startDate' fullWidth label="Date debut"
@@ -126,7 +141,7 @@ function UpdateObjective({ objective, id }) {
                                 </LocalizationProvider>
                                 {formik.touched.endDate && formik.errors.endDate && <FormHelperText>{formik.errors.endDate}</FormHelperText>}
                             </FormControl>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={6}>
                             <TextField required name='achievement' type="number" fullWidth label='Réalisatioin en %' placeholder='...' onChange={formik.handleChange}
                                 value={formik.values.achievement} />

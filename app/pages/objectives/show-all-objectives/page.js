@@ -65,7 +65,7 @@ const ShowObjectives = () => {
               }}
             >
               <Typography variant="h5" component="h1" sx={{ mr: 2 }}>
-                Les Objectives
+                Les Objectifs
               </Typography>
               <NotificationDropdown></NotificationDropdown>
             </Box>
@@ -106,7 +106,7 @@ const ShowObjectives = () => {
               height={50}
             />
           ) : (
-            data?.totalElements + " Objectives"
+            data?.totalElements + " Objectifs"
           )}
         </Typography>
         <Box
@@ -130,7 +130,7 @@ const ShowObjectives = () => {
         style={{ display: "flex", flexDirection: "column", alignItems: "end" }}
       >
         <LeftModal
-          button={<ExportButton text="Exporter Tous les Objectives" />}
+          button={<ExportButton text="Exporter Tous les Objectifs" />}
           form={<ExportForm />}
         />
       </Grid>

@@ -11,7 +11,7 @@ const UpdateValidateReject = () => {
       width="100px" 
     >
  
-      <Icon path={mdiPencil} size={1} style={{ color: "rgb(63, 144, 215)" }} sx={{ cursor: 'pointer' }} />
+      <Icon path={mdiPencil}  size={1} style={{ color: "rgb(63, 144, 215)" }} sx={{ cursor: 'pointer' }} />
 
       <Icon path={mdiCheckCircle} size={1} style={{ color: "rgb(84, 172, 100)" }} sx={{ cursor: 'pointer' }} />
 
