@@ -23,7 +23,7 @@ const ShowObjectives = () => {
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery({
       queryKey: ["objectives", page],
-      queryFn: () => getRequest('objective/?page=' + page + '&size=2'),
+      queryFn: () => getRequest("objective/?page=" + page + "&size=2"),
       keepPreviousData: true,
     });
 
@@ -65,7 +65,7 @@ const ShowObjectives = () => {
               }}
             >
               <Typography variant="h5" component="h1" sx={{ mr: 2 }}>
-                Les Objectives
+                Les Objectifs
               </Typography>
               <NotificationDropdown></NotificationDropdown>
             </Box>
@@ -79,7 +79,10 @@ const ShowObjectives = () => {
             }}
           >
             {/* modal form */}
-            <LeftModal button={<AddButton text="Ajouter un objectif"/>} form={<FormObjective />} />
+            <LeftModal
+              button={<AddButton text="Ajouter un objectif" />}
+              form={<FormObjective />}
+            />
           </Box>
         </Box>
       </Grid>
@@ -97,13 +100,13 @@ const ShowObjectives = () => {
         <Typography variant="h4" component="h1" style={{ fontWeight: 500 }}>
           {isLoading ? (
             <Skeleton
-              sx={{ bgcolor: "grey.900" }}
+              sx={{ bgcolor: "gray" }}
               variant="text"
               width={200}
               height={50}
             />
           ) : (
-            data?.totalElements + " Objectives"
+            data?.totalElements + " Objectifs"
           )}
         </Typography>
         <Box
@@ -126,14 +129,16 @@ const ShowObjectives = () => {
         xs={12}
         style={{ display: "flex", flexDirection: "column", alignItems: "end" }}
       >
-        <LeftModal button={<ExportButton text="Exporter Tous les Objectives" />} form={<ExportForm />} />
+        <LeftModal
+          button={<ExportButton text="Exporter Tous les Objectifs" />}
+          form={<ExportForm />}
+        />
       </Grid>
 
       {isLoading ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <CircularProgress
-            style={{ width: "70px", height: "70px",color:"rgb(255, 6, 126)" }}
-            
+            style={{ width: "70px", height: "70px", color: "rgb(255, 6, 126)" }}
           />
         </div>
       ) : isError ? (

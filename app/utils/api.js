@@ -20,4 +20,13 @@ const getRequest = async (url) => {
   }
 };
 
-export { postRequest, getRequest };
+const putRequest = async (url, data) => {
+  try {
+    const response = await axios.put(BASE_URL + url, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Something went wrong");
+  }
+};
+
+export { postRequest, getRequest, putRequest };
