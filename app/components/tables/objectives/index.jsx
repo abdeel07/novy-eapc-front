@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 // Material ui components
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -7,6 +7,11 @@ import StatusButton from '../../buttons/StatusButton';
 import LeftModal from '../../modals';
 import UpdateObjective from '../../forms/objective/update';
 import UpdateButton from '../../buttons/UpdateButton';
+import { Alert, AlertTitle, IconButton, Snackbar } from '@mui/material';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { deleteRequest, putRequest } from '@/app/utils/api';
+import { useMutation } from '@tanstack/react-query';
 
 const TableObjectives = ({ rows }) => {
 
@@ -20,10 +25,51 @@ const TableObjectives = ({ rows }) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', options).format(date);
   };
+
+  const deleteMutation = useMutation(deleteRequest);
+  const validateMutation = useMutation(({ url, data }) => putRequest(url, data));
+
+  const handleDelete = async (id) => {
+    try {
+      // Perform the mutation
+      await deleteMutation.mutateAsync('objective/' + id);
+
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const vertical = 'bottom';
+  const horizontal = 'center';
+
+  const handleValide = async (row) => {
+    try {
+      row.status = 'Accepté';
+
+      const data = {
+        title: row?.title,
+        interviewType: row?.interviewType,
+        interviewId: row?.interviewId,
+        collaboratorId: row?.collaboratorId,
+        startDate: row?.startDate,
+        endDate: row?.endDate,
+        achievement: row?.achievement,
+        status: row?.status,
+        comment: row?.comment,
+      };
+
+      await validateMutation.mutateAsync({ url: 'objective/' + row.id, data: data });
+
+      setShowSuccessAlert(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div>
-
-
       {rows?.map((row) => (
         <Paper
           key={row.id}
@@ -64,10 +110,50 @@ const TableObjectives = ({ rows }) => {
             <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '10px' } }}>
               <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Actions</Typography>
 
-              <LeftModal
-                button={ <UpdateButton />}
-                form={<UpdateObjective objective={row} id={row.id} />}
-              />
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "center" }}>
+
+                <LeftModal
+                  button={<UpdateButton />}
+                  form={<UpdateObjective objective={row} />}
+                />
+
+                <IconButton type='submit' aria-label="update" size="small" onClick={() => handleDelete(row.id)}>
+                  <DeleteForeverIcon fontSize="small" />
+                </IconButton>
+
+                {showSuccessAlert && (
+                  <Snackbar
+                    open={showSuccessAlert}
+                    autoHideDuration={3000}
+                    onClose={() => setShowSuccessAlert(false)}
+                    anchorOrigin={{ vertical, horizontal }}
+                    key={vertical + horizontal}
+                  >
+                    <Alert severity="success" sx={{ width: '100%' }}>
+                      <AlertTitle>Supprimé avec succès</AlertTitle>
+                    </Alert>
+                  </Snackbar>
+                )}
+
+                <IconButton type='submit' aria-label="update" size="small" onClick={() => handleValide(row)}>
+                  <TaskAltIcon fontSize="small" />
+                </IconButton>
+
+                {showSuccessAlert && (
+                  <Snackbar
+                    open={showSuccessAlert}
+                    autoHideDuration={3000}
+                    onClose={() => setShowSuccessAlert(false)}
+                    anchorOrigin={{ vertical, horizontal }}
+                    key={vertical + 1 + horizontal + 1}
+                  >
+                    <Alert severity="success" sx={{ width: '100%' }}>
+                      <AlertTitle>Validé avec succès</AlertTitle>
+                    </Alert>
+                  </Snackbar>
+                )}
+
+              </div>
             </Box>
           </Box>
         </Paper>
