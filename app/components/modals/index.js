@@ -10,7 +10,6 @@ const LeftModal = ({ button,form }) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
-    console.log("clicked")
     setOpen(true);
   };
 
@@ -67,7 +66,7 @@ const LeftModal = ({ button,form }) => {
           >
             <Icon path={mdiClose} size={1} />
           </IconButton>
-          {form}
+          {React.cloneElement(form, { handleCloseModal: handleClose })}
         </Box>
       </Modal>
     </div>

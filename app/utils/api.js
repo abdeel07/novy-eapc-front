@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/";
+const BASE_URL = "http://localhost:8081/api/";
 
 const postRequest = async (url, data) => {
   try {
@@ -22,11 +22,25 @@ const getRequest = async (url) => {
 
 const putRequest = async (url, data) => {
   try {
-    const response = await axios.put(BASE_URL + url, data);
+    const response = await axios.put(BASE_URL + url, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Something went wrong");
   }
 };
 
-export { postRequest, getRequest, putRequest };
+const deleteRequest = async (url) => {
+  try {
+    const response = await axios.delete(BASE_URL + url);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Something went wrong");
+  }
+};
+
+export { postRequest, getRequest, putRequest, deleteRequest };

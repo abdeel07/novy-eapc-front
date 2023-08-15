@@ -17,21 +17,29 @@ import Textarea from '@mui/joy/Textarea';
 import { useMutation } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import React from 'react'
+import { useState } from 'react';
+import { Alert, AlertTitle, Snackbar } from '@mui/material';
 
-function UpdateObjective({ objective, id }) {
+function UpdateObjective({ objective, handleCloseModal }) {
 
-    const mutation = useMutation((formData) => putRequest('objective/' + id , formData));
+    const mutation = useMutation((formData) => putRequest('objective/' + objective?.id, formData));
+    
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+    const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
 
     // Handle form submission
-    const handleSubmit = async (values, event) => {
-        event.preventDefault();
+    const handleSubmit = async (values) => {
         const formData = values;
 
         try {
             await mutation.mutateAsync(formData);
-            event.target.reset();
+
+            setShowSuccessAlert(true);
+            formik.resetForm();
         } catch (error) {
-            console.error('Error submitting form:', error.message);
+            setShowErrorAlert(true);
         }
     };
 
@@ -66,9 +74,14 @@ function UpdateObjective({ objective, id }) {
         },
 
         onSubmit: values => {
-            handleSubmit(values, event)
+            handleSubmit(values)
         },
     });
+
+    const handleCancel = () => {
+        formik.resetForm();
+        handleCloseModal();
+    };
 
     return (
         <Card sx={{ marginTop: "40px" }}>
@@ -193,6 +206,7 @@ function UpdateObjective({ objective, id }) {
                         Submit
                     </Button>
                     <Button
+                        onClick={handleCancel}
                         size="large"
                         sx={{
                             flex: 1, // Use flex property to make the button expand and fill the available space
@@ -204,10 +218,37 @@ function UpdateObjective({ objective, id }) {
                     >
                         Cancel
                     </Button>
-
-
                 </CardActions>
             </form>
+
+
+            {showSuccessAlert && (
+                <Snackbar
+                    open={showSuccessAlert}
+                    autoHideDuration={3000}
+                    onClose={() => setShowSuccessAlert(false)}
+                    anchorOrigin={{ vertical, horizontal }}
+                    key={vertical + horizontal}
+                >
+                    <Alert severity="success" sx={{ width: '100%' }}>
+                        <AlertTitle>Modification avec succès</AlertTitle>
+                    </Alert>
+                </Snackbar>
+            )}
+
+            {showErrorAlert && (
+                <Snackbar
+                    open={showErrorAlert}
+                    autoHideDuration={3000}
+                    onClose={() => setShowErrorAlert(false)}
+                    anchorOrigin={{ vertical, horizontal }}
+                    key={vertical + horizontal}
+                >
+                    <Alert severity="error" sx={{ width: '100%' }}>
+                        <AlertTitle>Échec de modification</AlertTitle>
+                    </Alert>
+                </Snackbar>
+            )}
         </Card>
     )
 }

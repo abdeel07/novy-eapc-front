@@ -1,4 +1,4 @@
-import React, { } from 'react'
+import React, { useState } from 'react'
 
 
 // ** MUI Imports
@@ -26,23 +26,30 @@ import Textarea from '@mui/joy/Textarea';
 import { useMutation } from '@tanstack/react-query';
 import { postRequest } from '@/app/utils/api';
 import { useFormik } from 'formik';
-import { FormHelperText } from '@mui/material'
+import { Alert, AlertTitle, FormHelperText, Snackbar } from '@mui/material'
 
-const FormObjective = () => {
+const FormObjective = ({ handleCloseModal }) => {
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+  const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
 
   // Define the mutation using useMutation
   const mutation = useMutation((formData) => postRequest('objective/', formData));
 
   // Handle form submission
-  const handleSubmit = async (values, event) => {
-    event.preventDefault();
+  const handleSubmit = async (values) => {
     const formData = values;
-    
+
     try {
       await mutation.mutateAsync(formData);
-      event.target.reset();
+
+      setShowSuccessAlert(true);
+
+      formik.resetForm();
     } catch (error) {
-      console.error('Error submitting form:', error.message);
+      setShowErrorAlert(true);
     }
   };
 
@@ -64,13 +71,26 @@ const FormObjective = () => {
         errors.endDate = 'End Date must be greater than Start Date';
       }
 
+      if (values.achievement && (values.achievement < 0 || values.achievement > 100)) {
+        errors.achievement = 'Achievement must be between 0 and 100';
+      }
+
+      if (values.title && values.title.length < 3) {
+        errors.title = 'Title must be at least 3 characters';
+      }
+
       return errors;
     },
 
     onSubmit: values => {
-      handleSubmit(values, event)
+      handleSubmit(values)
     },
   });
+
+  const handleCancel = () => {
+    formik.resetForm();
+    handleCloseModal();
+  };
 
   return (
     <Card sx={{ marginTop: "40px" }}>
@@ -83,6 +103,7 @@ const FormObjective = () => {
             <Grid item xs={12} sm={12}>
               <TextField required name='title' fullWidth label='Nom Objectif' placeholder='...' onChange={formik.handleChange}
                 value={formik.values.title} />
+              {formik.touched.title && formik.errors.title && <FormHelperText style={{ color: 'red' }}>{formik.errors.title}</FormHelperText>}
             </Grid>
 
             <Grid item xs={12} sm={12}>
@@ -131,7 +152,7 @@ const FormObjective = () => {
                     onChange={(date) => formik.setFieldValue('startDate', date ? date : null)}
                     value={formik.values.startDate} />
                 </LocalizationProvider>
-                {formik.touched.startDate && formik.errors.startDate && <FormHelperText>{formik.errors.startDate}</FormHelperText>}
+                {formik.touched.startDate && formik.errors.startDate && <FormHelperText style={{ color: 'red' }}>{formik.errors.startDate}</FormHelperText>}
               </FormControl>
             </Grid>
 
@@ -141,12 +162,13 @@ const FormObjective = () => {
                   <DatePicker required name='endDate' label="Date fin" onChange={(date) => formik.setFieldValue('endDate', date, true)}
                     value={formik.values.endDate} />
                 </LocalizationProvider>
-                {formik.touched.endDate && formik.errors.endDate && <FormHelperText>{formik.errors.endDate}</FormHelperText>}
+                {formik.touched.endDate && formik.errors.endDate && <FormHelperText style={{ color: 'red' }}>{formik.errors.endDate}</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField required name='achievement' type="number" fullWidth label='Réalisatioin en %' placeholder='...' onChange={formik.handleChange}
                 value={formik.values.achievement} />
+              {formik.touched.achievement && formik.errors.achievement && <FormHelperText style={{ color: 'red' }}>{formik.errors.achievement}</FormHelperText>}
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -195,6 +217,7 @@ const FormObjective = () => {
             Submit
           </Button>
           <Button
+            onClick={handleCancel}
             size="large"
             sx={{
               flex: 1, // Use flex property to make the button expand and fill the available space
@@ -206,10 +229,36 @@ const FormObjective = () => {
           >
             Cancel
           </Button>
-
-
         </CardActions>
       </form>
+
+      {showSuccessAlert && (
+        <Snackbar
+          open={showSuccessAlert}
+          autoHideDuration={5000}
+          onClose={() => setShowSuccessAlert(false)}
+          anchorOrigin={{ vertical, horizontal }}
+          key={vertical + horizontal}
+        >
+          <Alert severity="success" sx={{ width: '100%' }}>
+            <AlertTitle>Ajout avec succès</AlertTitle>
+          </Alert>
+        </Snackbar>
+      )}
+
+      {showErrorAlert && (
+        <Snackbar
+          open={showErrorAlert}
+          autoHideDuration={5000}
+          onClose={() => setShowErrorAlert(false)}
+          anchorOrigin={{ vertical, horizontal }}
+          key={vertical + horizontal}
+        >
+          <Alert severity="error" sx={{ width: '100%' }}>
+            <AlertTitle>Échec de l'ajout</AlertTitle>
+          </Alert>
+        </Snackbar>
+      )}
     </Card>
   )
 }
