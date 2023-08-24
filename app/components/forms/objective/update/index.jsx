@@ -22,10 +22,10 @@ import React from 'react'
 import { useState } from 'react';
 import { Alert, AlertTitle, Snackbar } from '@mui/material';
 
-function UpdateObjective({ objective, handleCloseModal ,role}) {
+function UpdateObjective({ objective, handleCloseModal, role }) {
 
     const mutation = useMutation((formData) => putRequest('objective/' + objective?.id, formData));
-    
+
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
 
@@ -44,7 +44,7 @@ function UpdateObjective({ objective, handleCloseModal ,role}) {
             setShowErrorAlert(true);
         }
     };
-    
+
     console.log(objective?.startDate)
 
     const formik = useFormik({
@@ -145,7 +145,7 @@ function UpdateObjective({ objective, handleCloseModal ,role}) {
                                     <DatePicker required name='startDate' fullWidth label="Date debut"
                                         onChange={(date) => formik.setFieldValue('startDate', date ? date : null)}
                                         value={dayjs(formik.values.startDate)}
-                                       />
+                                    />
                                 </LocalizationProvider>
                                 {formik.touched.startDate && formik.errors.startDate && <FormHelperText>{formik.errors.startDate}</FormHelperText>}
                             </FormControl>
@@ -155,8 +155,8 @@ function UpdateObjective({ objective, handleCloseModal ,role}) {
                             <FormControl fullWidth error={formik.touched.endDate && formik.errors.endDate}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker required name='endDate' label="Date fin" onChange={(date) => formik.setFieldValue('endDate', date, true)}
-                                       value={dayjs(formik.values.endDate)}
-                                         />
+                                        value={dayjs(formik.values.endDate)}
+                                    />
                                 </LocalizationProvider>
                                 {formik.touched.endDate && formik.errors.endDate && <FormHelperText>{formik.errors.endDate}</FormHelperText>}
                             </FormControl>
