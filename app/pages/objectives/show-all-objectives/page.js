@@ -16,19 +16,48 @@ import ExportButton from "@/app/components/buttons/exportButton/ExportButton";
 import ExportForm from "@/app/components/forms/objective/exportObjective";
 import { CircularProgress, Skeleton } from "@mui/material";
 import { getRequest } from "@/app/utils/api";
+import { useRole } from "@/app/components/Role";
 
 const ShowObjectives = () => {
   let [page, setPage] = useState(0);
 
+  let [size, setSize] = useState(3);
+
+  let [searchField, setSearchField] = useState("");
+
+  let [year, setYear] = useState(new Date().getFullYear());
+
+  const { role } = useRole();
+
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery({
-      queryKey: ["objectives", page],
-      queryFn: () => getRequest("objective/?page=" + page + "&size=2"),
+      queryKey: ["objectives", page, searchField, year],
+      queryFn: () =>
+        getRequest(
+          "objective/collaborator?page=" +
+            page +
+            "&size=" +
+            size +
+            "&name=" +
+            searchField +
+            "&year=" +
+            year
+        ),
       keepPreviousData: true,
     });
 
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
+  };
+
+  const handleSearch = (value) => {
+    setSearchField(value);
+    setPage(0);
+  };
+
+  const handleYearChange = (selectedYear) => {
+    setYear(selectedYear);
+    setPage(0);
   };
 
   return (
@@ -69,7 +98,7 @@ const ShowObjectives = () => {
               </Typography>
               <NotificationDropdown></NotificationDropdown>
             </Box>
-            <CustomDatePicker />
+            <CustomDatePicker onSelectYear={handleYearChange} />
           </Box>
 
           <Box
@@ -81,7 +110,7 @@ const ShowObjectives = () => {
             {/* modal form */}
             <LeftModal
               button={<AddButton text="Ajouter un objectif" />}
-              form={<FormObjective />}
+              form={<FormObjective role="admin" />}
             />
           </Box>
         </Box>
@@ -118,7 +147,7 @@ const ShowObjectives = () => {
             gap: { xs: "10px", sm: "16px" },
           }}
         >
-          <FiltreButton />
+          <FiltreButton handleSearch={handleSearch} searchField={searchField} />
         </Box>
       </Grid>
 
@@ -142,7 +171,11 @@ const ShowObjectives = () => {
           />
         </div>
       ) : isError ? (
-        <div>Error: {error.message}</div>
+        <div style={{ alignSelf: "center" }}>Error: {error.message}</div>
+      ) : data?.totalElements == 0 ? (
+        <div style={{ alignSelf: "center" }}>
+          Aucun objectif avec ce collaborateur{" "}
+        </div>
       ) : (
         <Grid
           sx={{
@@ -153,7 +186,12 @@ const ShowObjectives = () => {
           }}
         >
           <Box>
-            <TableObjectives rows={data?.content} />
+            <TableObjectives
+              rows={data?.content}
+              action="true"
+              role={role}
+              refetch={refetch}
+            />
           </Box>
           <Box
             style={{

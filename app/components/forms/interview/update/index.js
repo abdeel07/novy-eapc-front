@@ -31,30 +31,59 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { CircularProgress } from '@mui/material';
+import dayjs from 'dayjs';
+import { putRequest } from '@/app/utils/api';
 
 
-const FormInterview = () => {
+const FormInterview = ({interview}) => {
   // ** States
   const router = useRouter();
-  const [questionFields, setQuestionFields] = useState([""]); // Initial state with an empty TextField for "Questionnaire" Card
-  const [accomplishmentFields, setAccomplishmentFields] = useState([""]); // Initial state with an empty TextField for "Accomplissement" Card
+  const [questionFields, setQuestionFields] = useState(
+    interview?.quizzes  && interview.quizzes.length>0
+      ? interview.quizzes.map((quiz) => ({
+          id: quiz.id,
+          question: quiz.question,
+        }))
+      : [
+          {
+            id: null,
+            question: '',
+          },
+        ]
+  );
+ 
+  const [accomplishmentFields, setAccomplishmentFields] = useState(
+    interview?.fulfillments && interview.fulfillments.length > 0
+      ? interview.fulfillments.map((fulfillment) => ({
+          id: fulfillment.id,
+          title: fulfillment.title,
+        }))
+      : [
+          {
+            id: null,
+            title: '',
+          },
+        ]
+  );
+  
   const [domLoaded, setDomLoaded] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [progress, setProgress] = useState(false);
   let [page, setPage] = useState(0);
   const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
-  
-
+  useEffect(() => {
+    setDomLoaded(true);
+  }, []);
+ 
+  const mutation = useMutation((formData) => putRequest('interview/' + interview?.id, formData));
+ 
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
   };
 
-  useEffect(() => {
-    setDomLoaded(true);
-  }, []);
 
-  const PER_PAGE = 1;
+  
 
   const handleAddQuestionField = () => {
     setQuestionFields([...questionFields, ""]); // Add an empty TextField to the "Questionnaire" Card state
@@ -70,7 +99,15 @@ const FormInterview = () => {
 
   const handleQuestionFieldChange = (index, value) => {
     const newFields = [...questionFields];
-    newFields[index] = value; // Update the TextField value at the specified index for "Questionnaire" Card
+    if(newFields[index].question!=null){
+      newFields[index].question = value; 
+    }
+    else{
+      newFields[index]={
+        id:null,
+        question :value ,
+      } ;
+    }
     setQuestionFields(newFields);
   };
 
@@ -88,48 +125,55 @@ const FormInterview = () => {
 
   const handleAccomplishmentFieldChange = (index, value) => {
     const newFields = [...accomplishmentFields];
-    newFields[index] = value; // Update the TextField value at the specified index for "Accomplissement" Card
+    if(newFields[index].title!=null){
+      newFields[index].title = value; 
+    }
+    else{
+      newFields[index]={
+        id:null,
+        title :value ,
+      } ;
+    }
+   
     setAccomplishmentFields(newFields);
   };
-  // Define the mutation using useMutation
-  const mutation = useMutation((formData) => postRequest('interview/', formData));
+ 
 
-  // Handle form submission
   const handleSubmit = async (values) => {
     setProgress(true);
     const formData = values;
-    const quizzes = questionFields.map(question => {
+    const quizzes = questionFields.map(quiz => {
       return {
-        question: question,
+        id:quiz.id,
+        question: quiz.question,
       };
     });
     const fulfillments = accomplishmentFields.map(accomplishment => {
       return {
-        title: accomplishment,
+        id:accomplishment.id,
+        title: accomplishment.title,
       };
     });
-    const objectives = data?.content.map(objective=> objective.id);
+    const objectives = interview?.objectives.map(objective=> objective.id);
     formData["quizzes"]=quizzes
     formData["fulfillments"]=fulfillments
     formData["objectivesId"]=objectives;
 
     try {
       await mutation.mutateAsync(formData);
-
       setShowSuccessAlert(true);
-
-      formik.resetForm();
-      setQuestionFields([""])
-      setAccomplishmentFields([""])
     } catch (error) {
       setShowErrorAlert(true);
     }finally {
       setProgress(false); 
+      console.log(formData)
     }
   };
-
-  const formik = useFormik({
-    initialValues: { type: '', notice: '', collaboratorId: '', date: null },
+const formik = useFormik({
+    initialValues: { type: interview?.type,
+        notice: interview?.notice,
+        collaboratorId: interview?.collaboratorId,
+         date: interview?.date },
 
 
     onSubmit: values => {
@@ -138,39 +182,20 @@ const FormInterview = () => {
   });
 
 
+
   const handleCancel = () => {
 
     formik.resetForm();
     router.back();
    
   };
-  const fetchObjectives = async (page, type, date) => {
-  const response = await getRequest(
-    `objective/collaborator-interview/?page=${page}&size=2&id=2&year=${date.getFullYear()}&interviewType=${type}`
-  );
-  return response.data; // Assuming you want to return the data from the response
-};
-  
-
-  const { isLoading, isError, error, data, isFetching, isPreviousData } =
-    useQuery({
-      queryKey: ["objectives", page,formik.values.collaboratorId,formik.values.date,formik.values.type],
-      queryFn: () =>
-        getRequest(
-          `objective/collaborator-interview/?page=${page}&size=2&id=${formik.values.collaboratorId}&year=${formik.values.date?.$y}&interviewType=${formik.values.type}`
-        ),
-      keepPreviousData: true,
-    });
-    console.log(formik.values.date)
-    console.log(formik.values.type)
-    console.log(isLoading)
   return (
     <>
    
       {domLoaded && (
         <Card sx={{ marginTop: "40px" }}>
           <CardHeader
-            title="Ajouter un entretien"
+            title="Modifier un entretien"
             titleTypographyProps={{ variant: "h6" }}
           />
           <Divider sx={{ margin: 0 }} />
@@ -190,7 +215,8 @@ const FormInterview = () => {
                   }}
                 />
               )}
-              <Grid container spacing={5}>
+
+           <Grid container spacing={5}>
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel>Type Entretien</InputLabel>
@@ -232,7 +258,7 @@ const FormInterview = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker fullWidth label="Date d'entretien"
                       onChange={(date) => formik.setFieldValue('date', date ? date : null)}
-                      value={formik.values.date}
+                      value={dayjs(formik.values.date)}
                       />
                     </LocalizationProvider>
                   </FormControl>
@@ -263,7 +289,7 @@ const FormInterview = () => {
                         sm={12}
                         style={{ display: "flex", flexDirection: "column" }}
                       >
-                        {questionFields.map((text, index) => (
+                        {questionFields.map((quiz, index) => (
                           <Grid
                             item
                             xs={12}
@@ -275,7 +301,7 @@ const FormInterview = () => {
                               fullWidth
                               label={"Question " + (index + 1)}
                               placeholder="..."
-                              value={text}
+                              value={quiz.question}
                               style={{ marginBottom: "8px" }}
                               onChange={(e) =>
                                 handleQuestionFieldChange(index, e.target.value)
@@ -316,7 +342,7 @@ const FormInterview = () => {
                         sm={12}
                         style={{ display: "flex", flexDirection: "column" }}
                       >
-                        {accomplishmentFields.map((text, index) => (
+                        {accomplishmentFields.map((accomplishment, index) => (
                           <Grid
                             item
                             xs={12}
@@ -328,7 +354,7 @@ const FormInterview = () => {
                               fullWidth
                               label={"Accomplissement " + (index + 1)}
                               placeholder="..."
-                              value={text}
+                              value={accomplishment.title}
                               style={{ marginBottom: "8px" }}
                               onChange={(e) =>
                                 handleAccomplishmentFieldChange(
@@ -377,13 +403,9 @@ const FormInterview = () => {
                         sm={12}
                         style={{ marginRight: "20px" }}
                       >
-                       {formik.values.type === '' || formik.values.date === null || isError ? (
-                          <div style={{ display: "flex", justifyContent: "center" }}>
-                            <CircularProgress style={{ width: "50px", height: "50px" ,color:"rgb(255, 6, 126)"}} color="info" />
-                          </div>
-                        ) : (
-                          <>
-                            <TableObjectives rows={data?.content} />
+                     
+                        
+                            <TableObjectives rows={interview?.objectives} />
                             <Grid
                               style={{
                                 display: "flex",
@@ -392,20 +414,20 @@ const FormInterview = () => {
                               }}
                             >
                               <CustomPagination
-                                count={data?.totalPages}
-                                page={data?.currentPage + 1}
+                                count={interview?.objectives?.totalPages}
+                                page={interview?.objectives?.currentPage + 1}
                                 handleChange={handleChange}
                               />
                             </Grid>
-                          </>
-                        )}
-
+                       
                       
                       </Grid>
+                      
                     </CardContent>
                   </Card>
                 </Grid>
               </Grid>
+              {/* )} */}
             </CardContent>
             <Divider sx={{ margin: 0 }} />
             <CardActions sx={{ paddingLeft: "18px" }}>
@@ -449,7 +471,7 @@ const FormInterview = () => {
           key={vertical + horizontal}
         >
           <Alert severity="success" sx={{ width: '100%' }}>
-            <AlertTitle>Ajout avec succès</AlertTitle>
+            <AlertTitle>Modifié avec succès</AlertTitle>
           </Alert>
         </Snackbar>
       )}

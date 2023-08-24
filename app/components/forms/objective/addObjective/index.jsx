@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Textarea from '@mui/joy/Textarea';
+import { useRole } from '@/app/components/Role'
 
 
 
@@ -29,7 +30,7 @@ import { useFormik } from 'formik';
 import { Alert, AlertTitle, FormHelperText, Snackbar } from '@mui/material'
 
 const FormObjective = ({ handleCloseModal }) => {
-
+  const {role}=useRole()
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
 
@@ -54,7 +55,7 @@ const FormObjective = ({ handleCloseModal }) => {
   };
 
   const formik = useFormik({
-    initialValues: { title: '', interviewType: '', collaboratorId: '', startDate: null, endDate: null, achievement: '', status: '', comment: '' },
+    initialValues: { title: '', interviewType: '', collaboratorId:role=="user"? '2':'', startDate: null, endDate: null, achievement: '', status:role=="user"? 'En cours':'', comment: '' },
 
     validate: (values) => {
       const errors = {};
@@ -125,26 +126,29 @@ const FormObjective = ({ handleCloseModal }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <FormControl fullWidth>
-                <InputLabel >Affecté à</InputLabel>
-                <Select
-                  required
-                  label='Country'
-                  defaultValue=''
-                  id='form-layouts-separator-select'
-                  labelId='form-layouts-separator-select-label'
-                  name='collaboratorId'
-                  onChange={formik.handleChange}
-                  value={formik.values.collaboratorId}
-                >
-                  <MenuItem value='1'>Abdou </MenuItem>
-                  <MenuItem value='2'>Redouane</MenuItem>
-                  <MenuItem value='3'>Youssef</MenuItem>
+            {role==="admin" && (
+                  <Grid item xs={12} sm={12}>
+                  <FormControl fullWidth>
+                    <InputLabel >Affecté à</InputLabel>
+                    <Select
+                      required
+                      label='Country'
+                      defaultValue=''
+                      id='form-layouts-separator-select'
+                      labelId='form-layouts-separator-select-label'
+                      name='collaboratorId'
+                      onChange={formik.handleChange}
+                      value={formik.values.collaboratorId}
+                    >
+                      <MenuItem value='1'>Abdou </MenuItem>
+                      <MenuItem value='2'>Redouane</MenuItem>
+                      <MenuItem value='3'>Youssef</MenuItem>
 
-                </Select>
-              </FormControl>
-            </Grid>
+                    </Select>
+                  </FormControl>
+                </Grid>
+            )}
+            
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth error={formik.touched.startDate && formik.errors.startDate}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -165,11 +169,12 @@ const FormObjective = ({ handleCloseModal }) => {
                 {formik.touched.endDate && formik.errors.endDate && <FormHelperText style={{ color: 'red' }}>{formik.errors.endDate}</FormHelperText>}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={role === "user" ? 12 : 6}>
               <TextField required name='achievement' type="number" fullWidth label='Réalisatioin en %' placeholder='...' onChange={formik.handleChange}
                 value={formik.values.achievement} />
               {formik.touched.achievement && formik.errors.achievement && <FormHelperText style={{ color: 'red' }}>{formik.errors.achievement}</FormHelperText>}
             </Grid>
+            {role==="admin" && (
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel >Status</InputLabel>
@@ -190,6 +195,7 @@ const FormObjective = ({ handleCloseModal }) => {
                 </Select>
               </FormControl>
             </Grid>
+            )}
 
             <Grid item xs={12} sm={12}>
               <Textarea name='comment' minRows={2} label="Commentaire" placeholder='Commentaire...' onChange={formik.handleChange}

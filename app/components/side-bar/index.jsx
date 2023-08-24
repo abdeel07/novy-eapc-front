@@ -26,10 +26,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import logo from "../../../public/images/logo.png"
 import useUserPreferencesStore from '../../store/userPreferences'
-import { menu } from './menu'
-import Role from '../Role'
 import { useTranslation } from 'next-i18next'
-import { handleNavigation } from '../../utils/routingUtils'
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import SwitchAccountIcon from '@mui/icons-material/SwitchAccount';
+import { useRole } from '../Role'
 
 const drawerWidth = 240
 const SKELETON_COUNT = 4
@@ -84,7 +84,7 @@ export default function LeftMenu() {
   const router  = useRouter();
   const { t } = useTranslation('common');
   const [clickedItemId, setClickedItemId] = useState(1);
-
+  const { role } = useRole();
   const handleMenuItemClick = (id) => {
     setClickedItemId(id);
   };
@@ -112,11 +112,19 @@ export default function LeftMenu() {
     },
     {
       id: 4, 
+      label: 'my-interviews', 
+      path: '/pages/interview/my-interviews', 
+      icon:   <AccountBoxIcon/>
+    },
+    {
+      id: 5, 
       label: 'all-interviews', 
       path: '/pages/interview/all-interviews', 
-      icon:   <ContactPhoneIcon />
+      icon:   <SwitchAccountIcon />
     }
   ];
+  const filtredRoutes = role === 'user' ? routes.filter(route => route.id !== 3 && route.id !== 5) : routes.filter(route => route.id !== 4);
+  
   const activeRoute = (routeName, currentRoute) => {
     return routeName === currentRoute? true : false;
   }
@@ -125,10 +133,10 @@ export default function LeftMenu() {
   return (
     <Drawer variant="permanent" open={navState}>
        <Grid className="menu">
-          <Box style={{ marginBottom: 160,marginLeft:"25px" }}>
+          <Box style={{ marginBottom: 150,marginLeft:"25px" }}>
             <Image src={logo} alt="Promptopia Logo" width={40} height={40} style={{ marginTop: 10 }} />
           </Box>
-          {routes.map((item, index) => (
+          {filtredRoutes.map((item, index) => (
 
 
           <Link  href={item.path} style={{ textDecoration: 'none',color:"black ",marginLeft:"25px"}} key={item.id}>
@@ -139,8 +147,6 @@ export default function LeftMenu() {
                     color: activeRoute(item.path, router.pathname) ? 'rgb(255, 6, 126)' : 'black',
                     textDecoration: 'none',
                     backgroundColor: clickedItemId === item.id ? 'lightgray' : 'transparent',
-                   
-                    
                   }}
               >
               <ListItem button key={item.id}  >
@@ -150,32 +156,7 @@ export default function LeftMenu() {
               </MenuItem>
           </Link>
 
-))}
-          {/* <Link href="/">
-            <Box className="menu-item" style={{ color: "rgb(255, 6, 126)" ,paddingLeft:"25px",paddingBottom:"15px",display:"flex",flexDirection:"column"}} >
-            <HomeOutlinedIcon />
-            </Box>
-        </Link>
-        <Link href="/pages/objectives/my-objectives">
-            <Box className="menu-item" style={{ color: "rgb(255, 6, 126)" ,paddingLeft:"25px",paddingBottom:"15px",display:"flex",flexDirection:"column"}}>
-            <FolderIcon/>
-
-            </Box>
-        </Link>
-        <Link href="/pages/objectives/show-all-objectives">
-          <Box className="menu-item" style={{ color: "rgb(255, 6, 126)" ,paddingLeft:"25px",paddingBottom:"15px"}}>
-            <FolderCopyIcon/>
-          </Box>
-          </Link>
-          <Link href="/pages/interview/all-interviews">
-          <Box className="menu-item" style={{ color: "rgb(255, 6, 126)",paddingLeft:"25px",paddingBottom:"15px" }}>
-            <ContactPhoneIcon />
-          </Box>
-          </Link>
-
-          <Box className="menu-item" style={{ color: "rgb(255, 6, 126)",paddingLeft:"25px" ,paddingBottom:"15px"}}>
-            <ReceiptOutlinedIcon />
-          </Box> */}
+          ))}
 
           
      </Grid>

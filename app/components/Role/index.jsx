@@ -1,13 +1,21 @@
-function hasPermission(permissions, permitted) {
-    return permitted?.includes(permissions)
+import React, { createContext, useContext, useState } from 'react';
+
+const RoleContext = createContext();
+
+export const RoleProvider = ({ children }) => {
+  const [role, setRole] = useState('admin'); // Set your default role here
+
+  return (
+    <RoleContext.Provider value={{ role, setRole }}>
+      {children}
+    </RoleContext.Provider>
+  );
+};
+
+export const useRole = () => {
+  const context = useContext(RoleContext);
+  if (!context) {
+    throw new Error('useRole must be used within a RoleProvider');
   }
-  
-  function Role({ permitted, children }) {
-    const { data = {} } = {} // a remplacer par les informations user
-    const permissions = data?.role || ''
-    const isAuthorised = hasPermission(permissions, permitted)
-    return isAuthorised ? children: null;
-  }
-  
-  export default Role
-  
+  return context;
+};
