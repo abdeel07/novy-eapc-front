@@ -17,7 +17,9 @@ const Filter = ({
   filterData,
   criteria,
   textFieldPlaceHolder,
-  resetFilter
+  resetFilter,
+  handleSearch,
+  searchField
 }) => {
 
   const toggleFilter = (filterId, filterGroup) => {
@@ -27,28 +29,23 @@ const Filter = ({
       [filterGroup]: xor(prevState[filterGroup], [filterId].flat()),
     }))
   }
-  const search = (e) => {
-    debounceQuery(e.target.value)
-    setSelectedFilters((prevState) => ({
-      ...prevState,
-      query: e.target.value,
-      p: 1,
-    }))
-  };
 
-  
+  const handleSearchFieldChange = (event) => {
+    handleSearch(event.target.value);
+  };
+ 
   return (
     <Stack sx={{ ...sx, alignItems: 'center' }}>
       <TextField
         variant="standard"
         fullWidth
-        value={selectedFilters.query || ''}
+        value={searchField}
         sx={{
           maxWidth: 500,
           textAlignLast: 'center',
         }}
         placeholder={textFieldPlaceHolder}
-        onChange={search}
+        onChange={handleSearchFieldChange}
       />
       <Stack direction='row' spacing={1} mt={2} flexWrap="wrap" justifyContent="center">
         

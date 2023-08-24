@@ -3,9 +3,14 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper';
-import UpdateValidateReject from '../../icons/UpdateValidateReject';
+import { useRouter } from 'next/navigation';
+import UpdateButton from '../../buttons/UpdateButton';
+import IconButton from '@mui/material/IconButton'
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-const InterviewTable = ({ rows }) => {
+const InterviewTable = ({ rows, role }) => {
+  const router = useRouter();
 
   const formatDate = (dateString) => {
     const options = {
@@ -23,8 +28,11 @@ const InterviewTable = ({ rows }) => {
 
   return (
     <div>
-      {rows.map(row => (
-        <Paper elevation={0} sx={{ marginBottom: '20px', padding: "16px", backgroundColor: "rgb(255, 255, 255);", width: "100%" }}>
+      {rows?.map(row => (
+        <Paper elevation={0} sx={{
+          marginBottom: '20px', padding: "16px", backgroundColor: "rgb(255, 255, 255);", width: "100%",
+          borderLeft: `5px solid ${row.type === "Increase" ? "rgb(236, 64, 122)" : "rgb(41, 182, 246)"}`, borderRight: "5px solid white"
+        }}>
           <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" padding="16px">
             <Box flex={1} sx={{ marginBottom: { xs: '10px', sm: '0' } }}>
               <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Collaborateur</Typography>
@@ -45,10 +53,27 @@ const InterviewTable = ({ rows }) => {
               <Typography style={{ textAlign: 'center' }}>{row.notice}</Typography>
             </Box>
             <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '20px' } }}>
-              <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Actions</Typography>
-              <Typography style={{ textAlign: '-webkit-center' }}>
-                <UpdateValidateReject />
-              </Typography>
+              {role === 'admin' ? (
+                <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>
+                  Actions
+                </Typography>
+              ) : (
+                <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>
+                  Status
+                </Typography>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "center" }}>
+                {role === "admin" && <UpdateButton handleOpen={() =>
+                  router.push(`/pages/interview/update-interview/${row.id}`)
+                } />}
+                {role === "admin" && <IconButton type='submit' aria-label="update" size="small" >
+                  <DeleteForeverIcon fontSize="small" style={{ color: "rgb(255, 6, 126)" }} />
+                </IconButton>}
+                <IconButton type='submit' aria-label="update" size="small" >
+                  <TaskAltIcon fontSize="small"
+                  />
+                </IconButton>
+              </div>
             </Box>
           </Box>
         </Paper>

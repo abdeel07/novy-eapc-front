@@ -5,7 +5,8 @@ import { Button } from '@mui/material';
 import Filter from '../Filter';
 
 <Icon path={mdiAlignVerticalDistribute} size={1} />
-const FiltreButton = () => {
+const FiltreButton = ({ handleSearch, searchField }) => {
+
   const sx={
    
   }
@@ -19,39 +20,38 @@ const FiltreButton = () => {
       // Add more options as needed
     ],
     group: "1",
-    displayType: "checkbox", // Example displayType (adjust according to your needs)
+    displayType: "checkbox", 
   },
   {
-    title: "Pôles",
+    title: "Status",
     data: [
-      { id: "1", name: "Service 1" },
-      { id: "2", name: "Service 2" },
-      { id: "3", name: "Service 3" },
-      { id: "4", name: "Service 4" },
-      // Add more options as needed
+      { id: "1", name: "En cours" },
+      { id: "2", name: "Refusé" },
+      { id: "3", name: "Accepté" },
+      
     ],
     group: "2",
     displayType: "checkbox", // Example displayType (adjust according to your needs)
   },
   {
-    title: "Postes",
+    title: "Collaborateur",
     data: [
-      { id: "1", name: "Job 1" },
-      { id: "2", name: "Job 2" },
-      { id: "3", name: "Job 3" },
-      { id: "4", name: "Job 4" },
-      // Add more options as needed
+      { id: "1", name: "Redouane" },
+      { id: "2", name: "Abde" },
+      { id: "3", name: "Youssef" },
+  
+      
     ],
     group: "3",
-    displayType: "checkbox", // Example displayType (adjust according to your needs)
+    displayType: "textField", 
   },
   {  
     id:12,
-    title: "Type de contrats",
+    title: "Type d'entretien",
     data: [
-      { id: "1", name: "Contrat 1" },
-      { id: " 2", name: "Contrat 2" },
-      // Add more options as needed
+      { id: "1", name: "Performance" },
+      { id: " 2", name: "Increase" },
+    
     ],
     group: "4",
     displayType: "checkbox", // Example displayType (adjust according to your needs)
@@ -102,6 +102,8 @@ const FiltreButton = () => {
       criteria={criteria}
       textFieldPlaceHolder="Search..."
       resetFilter={resetFilter}
+      handleSearch={handleSearch}
+      searchField={searchField}
     />
    
   )

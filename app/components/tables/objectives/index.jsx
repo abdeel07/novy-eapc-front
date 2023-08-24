@@ -13,7 +13,7 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { deleteRequest, putRequest } from '@/app/utils/api';
 import { useMutation } from '@tanstack/react-query';
 
-const TableObjectives = ({ rows }) => {
+const TableObjectives = ({ rows, action, role, refetch }) => {
 
   const formatDate = (dateString) => {
     const options = {
@@ -65,6 +65,8 @@ const TableObjectives = ({ rows }) => {
       setShowSuccessAlert(true);
     } catch (error) {
       console.log(error);
+    } finally {
+      refetch();
     }
   }
 
@@ -77,6 +79,10 @@ const TableObjectives = ({ rows }) => {
           sx={{ marginBottom: '20px', padding: '16px', backgroundColor: 'rgb(255, 255, 255);', width: '100%' }}
         >
           <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" padding="16px">
+            <Box flex={1} sx={{ marginBottom: { xs: '10px', sm: '0' }, paddingLeft: { xs: '0', sm: '10px' } }}>
+              <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Collaborateur</Typography>
+              <Typography style={{ textAlign: 'center' }}>{row.collaboratorName}</Typography>
+            </Box>
             <Box flex={1} sx={{ marginBottom: { xs: '10px', sm: '0' } }}>
               <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Titre de l'objectif</Typography>
               <Typography style={{ textAlign: 'center' }}>{row.title}</Typography>
@@ -87,11 +93,9 @@ const TableObjectives = ({ rows }) => {
             </Box>
             <Box flex={1} sx={{ marginBottom: { xs: '10px', sm: '0' }, paddingLeft: { xs: '0', sm: '10px' } }}>
               <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Réalisation</Typography>
-              <Typography style={{ textAlign: 'center' }}>{row.achievement}%</Typography>
-            </Box>
-            <Box flex={1} sx={{ marginBottom: { xs: '10px', sm: '0' }, paddingLeft: { xs: '0', sm: '10px' } }}>
-              <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Collaborateur</Typography>
-              <Typography style={{ textAlign: 'center' }}>{row.collaboratorName}</Typography>
+              <Typography style={{ textAlign: 'center', color: row.achievement < 30 ? 'rgb(255, 6, 126)' : row.achievement < 60 ? 'rgb(235, 156, 38)' : 'rgb(41, 182, 246)' }}>
+                {row.achievement}%
+              </Typography>
             </Box>
             <Box flex={1} sx={{ paddingRight: { xs: '0', sm: '18px' } }}>
               <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Statut</Typography>
@@ -107,54 +111,63 @@ const TableObjectives = ({ rows }) => {
               <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Date de fin</Typography>
               <Typography style={{ textAlign: 'center' }}>{formatDate(row.endDate)}</Typography>
             </Box>
-            <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '10px' } }}>
-              <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Actions</Typography>
+            {action && (
+              <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '10px' } }}>
+                <Typography style={{ color: "gray", marginBottom: "8px", textAlign: 'center' }}>Actions</Typography>
 
-              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "center" }}>
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: "center" }}>
 
-                <LeftModal
-                  button={<UpdateButton />}
-                  form={<UpdateObjective objective={row} />}
-                />
+                  <LeftModal
+                    button={<UpdateButton />}
+                    form={<UpdateObjective objective={row} />}
+                  />
 
-                <IconButton type='submit' aria-label="update" size="small" onClick={() => handleDelete(row.id)}>
-                  <DeleteForeverIcon fontSize="small" />
-                </IconButton>
+                  <IconButton type='submit' aria-label="update" size="small" onClick={() => handleDelete(row.id)}>
+                    <DeleteForeverIcon fontSize="small" style={{ color: "rgb(255, 6, 126)" }} />
+                  </IconButton>
 
-                {showSuccessAlert && (
-                  <Snackbar
-                    open={showSuccessAlert}
-                    autoHideDuration={3000}
-                    onClose={() => setShowSuccessAlert(false)}
-                    anchorOrigin={{ vertical, horizontal }}
-                    key={vertical + horizontal}
-                  >
-                    <Alert severity="success" sx={{ width: '100%' }}>
-                      <AlertTitle>Supprimé avec succès</AlertTitle>
-                    </Alert>
-                  </Snackbar>
-                )}
+                  {showSuccessAlert && (
+                    <Snackbar
+                      open={showSuccessAlert}
+                      autoHideDuration={3000}
+                      onClose={() => setShowSuccessAlert(false)}
+                      anchorOrigin={{ vertical, horizontal }}
+                      key={vertical + horizontal}
+                    >
+                      <Alert severity="success" sx={{ width: '100%' }}>
+                        <AlertTitle>Supprimé avec succès</AlertTitle>
+                      </Alert>
+                    </Snackbar>
+                  )}
+                  {role === "admin" && (
+                    <IconButton type='submit' aria-label="update" size="small" onClick={() => handleValide(row)}>
+                      <TaskAltIcon fontSize="small"
+                        style={{
+                          color: row.status === 'Accepté' ? 'rgb(38, 116, 233)' : row.status === 'Refusé' ? 'rgb(255, 0, 0)' : ''
+                        }}
 
-                <IconButton type='submit' aria-label="update" size="small" onClick={() => handleValide(row)}>
-                  <TaskAltIcon fontSize="small" />
-                </IconButton>
+                      />
+                    </IconButton>
+                  )}
 
-                {showSuccessAlert && (
-                  <Snackbar
-                    open={showSuccessAlert}
-                    autoHideDuration={3000}
-                    onClose={() => setShowSuccessAlert(false)}
-                    anchorOrigin={{ vertical, horizontal }}
-                    key={vertical + 1 + horizontal + 1}
-                  >
-                    <Alert severity="success" sx={{ width: '100%' }}>
-                      <AlertTitle>Validé avec succès</AlertTitle>
-                    </Alert>
-                  </Snackbar>
-                )}
 
-              </div>
-            </Box>
+                  {showSuccessAlert && (
+                    <Snackbar
+                      open={showSuccessAlert}
+                      autoHideDuration={3000}
+                      onClose={() => setShowSuccessAlert(false)}
+                      anchorOrigin={{ vertical, horizontal }}
+                      key={vertical + 1 + horizontal + 1}
+                    >
+                      <Alert severity="success" sx={{ width: '100%' }}>
+                        <AlertTitle>Validé avec succès</AlertTitle>
+                      </Alert>
+                    </Snackbar>
+                  )}
+
+                </div>
+              </Box>
+            )}
           </Box>
         </Paper>
 

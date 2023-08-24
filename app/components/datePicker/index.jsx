@@ -3,16 +3,18 @@ import { Box, IconButton, Typography, Menu, MenuItem, Button } from "@mui/materi
 import Icon from "@mdi/react";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 
-const CustomDatePicker = () => {
+const CustomDatePicker = ({ onSelectYear }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [yearMenuAnchor, setYearMenuAnchor] = useState(null);
 
   const handlePreviousYear = () => {
     setSelectedYear((prevYear) => prevYear - 1);
+    onSelectYear((prevYear) => prevYear - 1);
   };
 
   const handleNextYear = () => {
     setSelectedYear((prevYear) => prevYear + 1);
+    onSelectYear((prevYear) => prevYear + 1);
   };
 
   const handleYearClick = (event) => {
@@ -26,6 +28,7 @@ const CustomDatePicker = () => {
   const handleSelectYear = (year) => {
     setSelectedYear(year);
     handleCloseMenu();
+    onSelectYear(year);
   };
   const renderYearOptions = () => {
     const currentYear = new Date().getFullYear();
@@ -36,8 +39,8 @@ const CustomDatePicker = () => {
 
     return years.map((year) => (
       <MenuItem key={year} onClick={() => handleSelectYear(year)}
-    
-      sx={year === selectedYear ? { backgroundColor: "rgb(255, 6, 126)",color:"white" } : {}}>
+
+        sx={year === selectedYear ? { backgroundColor: "rgb(255, 6, 126)", color: "white" } : {}}>
         {year}
       </MenuItem>
     ));
@@ -51,7 +54,7 @@ const CustomDatePicker = () => {
         alignItems: "center",
         justifyContent: "space-between",
         maxWidth: "250px",
-       
+
       }}
     >
       <IconButton onClick={handlePreviousYear}>
