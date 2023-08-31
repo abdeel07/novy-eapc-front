@@ -29,7 +29,7 @@ const ShowObjectives = () => {
 
   const { role } = useRole();
 
-  const { isLoading, isError, error, data, isFetching, isPreviousData } =
+  const { isLoading, isError, error, data, isFetching, isPreviousData,refetch } =
     useQuery({
       queryKey: ["objectives", page, searchField, year],
       queryFn: () =>
@@ -96,7 +96,7 @@ const ShowObjectives = () => {
               <Typography variant="h5" component="h1" sx={{ mr: 2 }}>
                 Les Objectifs
               </Typography>
-              <NotificationDropdown></NotificationDropdown>
+        
             </Box>
             <CustomDatePicker onSelectYear={handleYearChange} />
           </Box>

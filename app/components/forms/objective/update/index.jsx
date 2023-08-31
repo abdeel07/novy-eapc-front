@@ -44,8 +44,8 @@ function UpdateObjective({ objective, handleCloseModal, role }) {
             setShowErrorAlert(true);
         }
     };
-
-    console.log(objective?.startDate)
+    
+   
 
     const formik = useFormik({
         initialValues: {

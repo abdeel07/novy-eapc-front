@@ -21,6 +21,7 @@ export default function ActiveChips({
       ?.data?.find(({ id }) => id === filterId)?.name
   }
 
+  console.log(selectedFilters);
   return (
     <>
       {Object.keys(selectedFilters)
@@ -33,7 +34,13 @@ export default function ActiveChips({
                 onDelete={() => {
                   toggleFilter(id, index, true)
                 }}
-                sx={{ mb: 1 }}
+             
+                sx={{
+                  '& .MuiSvgIcon-root': {
+                    color: 'white', // Change the color to your desired color
+                  },
+                  mb:1
+                }}
               />
             ) : null,
           ),

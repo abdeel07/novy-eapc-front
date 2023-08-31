@@ -99,8 +99,8 @@ const TableObjectives = ({ rows, action, role, refetch }) => {
             </Box>
             <Box flex={1} sx={{ paddingRight: { xs: '0', sm: '18px' } }}>
               <Typography style={{ color: 'gray', marginBottom: '8px', textAlign: 'center' }}>Statut</Typography>
-              <Typography style={{ textAlign: 'center' }}>
-                <StatusButton textButton={row.status} />
+              <Typography style={{ alignItems: 'center' }}>
+                <StatusButton text={row.status} />
               </Typography>
             </Box>
             <Box flex={1} sx={{ paddingLeft: { xs: '0', sm: '10px' } }}>

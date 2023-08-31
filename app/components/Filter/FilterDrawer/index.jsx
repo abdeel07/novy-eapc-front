@@ -28,9 +28,10 @@ export default function FilterDrawer({
     <>
       <Chip
         icon={<FilterList />}
-        label={t('all_filters')}
+        label={t('Filtres')}
         onClick={() => toggleDrawer(true)}
         color={open ? 'primary' : 'default'}
+        style={{backgroundColor:open?"rgb(255, 6, 126)":"rgb(221, 247, 255)"}}
       />
       <SwipeableDrawer
         anchor="right"

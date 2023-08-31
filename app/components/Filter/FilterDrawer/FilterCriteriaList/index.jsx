@@ -53,7 +53,7 @@ export default function FilterCriteriaList({
               <>
                 <Accordion key={group} elevation={0} sx={{ py: 1 }}>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" component="div">
+                    <Typography variant="h6" component="div" >
                       {t(title)}
                     </Typography>
                     {selectedFilters[group] &&
@@ -103,14 +103,15 @@ export default function FilterCriteriaList({
           <Button
             variant="outlined"
             size="large"
-            color="inherit"
+           
             onClick={onReset}
+            style={{borderColor:"rgb(255, 6, 126)",color:"rgb(255, 6, 126)"}} 
           >
             {t('erase')}
           </Button>
         </Grid>
         <Grid item>
-          <Button variant="contained" size="large" onClick={onFilter}>
+          <Button variant="contained" size="large" style={{backgroundColor:"rgb(255, 6, 126)"}} onClick={onFilter}>
             {t('filter')}
           </Button>
         </Grid>

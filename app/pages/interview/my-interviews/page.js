@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CircularProgress, Skeleton } from "@mui/material";
 import { getRequest } from "@/app/utils/api";
 import { useRole } from "@/app/components/Role";
+import NotificationDropdown from "@/app/components/notification";
 const AllInterviews = () => {
   const { role } = useRole();
   const [domLoaded, setDomLoaded] = useState(false);
@@ -29,7 +30,21 @@ const AllInterviews = () => {
       queryFn: () => getRequest("interview/collaborator/2?year="+selectedYear+"&page="+page+"&size=2"),
       keepPreviousData: true,
     });
-    console.log(data);
+    const { isLoading:isLoadingNotification, isError:isErrorNotification,data:notification, isFetching:isFetchingNotification, isPreviousData:isPreviousDataNotification ,refetch:refetchNotification} =
+    useQuery({
+      queryKey: ["notifications", page],
+      queryFn: () => getRequest("notification/2?&page="+page+"&size=2"),
+      keepPreviousData: true,
+    });
+    const modifiedContent = data?.content.map((row) => {
+      const hasNullAnswer = row.quizzes.some((quiz) => quiz.answer === null);
+    
+      return {
+        ...row,
+        statusAnswer: hasNullAnswer
+      };
+    });
+  
     const handleYearChange = (year) => {
 
       setSelectedYear(year);
@@ -79,6 +94,8 @@ const AllInterviews = () => {
                   <Typography variant="h5" component="h1" sx={{ mr: 2 }}>
                     Mes Entretiens
                   </Typography>
+                
+                  {notification &&<NotificationDropdown rows={notification}></NotificationDropdown>}
                 </Box>
                 <CustomDatePicker  onSelectYear={handleYearChange}/>
               </Box>
@@ -108,7 +125,7 @@ const AllInterviews = () => {
               }}
             >
               <Box>
-                <InterviewTable rows={data?.content} role={role}/>
+                <InterviewTable rows={modifiedContent} role={role}/>
               </Box>
              
             </Grid>

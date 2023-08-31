@@ -33,7 +33,7 @@ const Filter = ({
   const handleSearchFieldChange = (event) => {
     handleSearch(event.target.value);
   };
- 
+ console.log(selectedFilters)
   return (
     <Stack sx={{ ...sx, alignItems: 'center' }}>
       <TextField
