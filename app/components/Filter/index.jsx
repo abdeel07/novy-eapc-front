@@ -19,21 +19,18 @@ const Filter = ({
   textFieldPlaceHolder,
   resetFilter,
   handleSearch,
-  searchField
+  searchField,
+  onFilter,
+  toggleFilter
 }) => {
 
-  const toggleFilter = (filterId, filterGroup) => {
-    setSelectedFilters((prevState) => ({
-      ...prevState,
-      p: 1,
-      [filterGroup]: xor(prevState[filterGroup], [filterId].flat()),
-    }))
-  }
+  
 
   const handleSearchFieldChange = (event) => {
     handleSearch(event.target.value);
   };
- 
+
+  
   return (
     <Stack sx={{ ...sx, alignItems: 'center' }}>
       <TextField
@@ -69,6 +66,7 @@ const Filter = ({
             selectedFilters={selectedFilters} 
             filters={filterData}
             onReset={resetFilter} 
+            onFilter={onFilter}
           />
         )}
       </Stack>

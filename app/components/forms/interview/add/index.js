@@ -45,7 +45,17 @@ const FormInterview = () => {
   let [page, setPage] = useState(0);
   const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
   
+  const { isLoading:isLoadingCollab, isError:isErrorCollab, error:errorCollab, data:dataCollab} =
+  useQuery({
+    queryKey: ["collaborator"],
+    queryFn: () => getRequest("collaborator/all"),
+    keepPreviousData: true,
+  });
 
+  const collaborators = dataCollab?.map((collaborator) => ({
+    id: collaborator.id, 
+    name: collaborator.firstName + ' ' + collaborator.lastName,
+  }));
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
   };
@@ -220,9 +230,11 @@ const FormInterview = () => {
                       name="collaboratorId"
                       onChange={formik.handleChange}
                     >
-                      <MenuItem value="1">Abde </MenuItem>
-                      <MenuItem value="2">Redouane</MenuItem>
-                      <MenuItem value="3">Youssef</MenuItem>
+                   {collaborators?.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.name}
+                                </MenuItem>
+                                 ))}
                     </Select>
                   </FormControl>
                 </Grid>

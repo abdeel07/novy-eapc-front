@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import NotificationDropdown from "../../../components/notification";
 import TableObjectives from "@/app/components/tables/objectives";
-import FiltreButton from "../../../components/buttons/FiltreButton";
+import FiltreButton from "../../../components/buttons/filter/FiltreButton";
 import CustomPagination from "../../../components/pagination/CustomPagination";
 import LeftModal from "../../../components/modals";
 import FormObjective from "@/app/components/forms/objective/addObjective";
@@ -17,6 +17,7 @@ import ExportForm from "@/app/components/forms/objective/exportObjective";
 import { CircularProgress, Skeleton } from "@mui/material";
 import { getRequest } from "@/app/utils/api";
 import { useRole } from "@/app/components/Role";
+import { useEffect } from "react";
 
 const ShowObjectives = () => {
   let [page, setPage] = useState(0);
@@ -27,24 +28,114 @@ const ShowObjectives = () => {
 
   let [year, setYear] = useState(new Date().getFullYear());
 
-  const { role } = useRole();
+  const [selectedFilterValues, setSelectedFilterValues] = useState({});
 
-  const { isLoading, isError, error, data, isFetching, isPreviousData } =
-    useQuery({
-      queryKey: ["objectives", page, searchField, year],
-      queryFn: () =>
-        getRequest(
-          "objective/collaborator?page=" +
-            page +
-            "&size=" +
-            size +
-            "&name=" +
-            searchField +
-            "&year=" +
-            year
-        ),
+  const { role } = useRole();
+  const {
+    isLoading: isLoadingCollab,
+    isError: isErrorCollab,
+    error: errorCollab,
+    data: dataCollab,
+  } = useQuery({
+    queryKey: ["collaborator"],
+    queryFn: () => getRequest("collaborator/all"),
+    keepPreviousData: true,
+  });
+
+  const collaborators = dataCollab?.map((collaborator) => ({
+    id: collaborator.id,
+    name: collaborator.firstName + " " + collaborator.lastName,
+  }));
+  const filterData = [
+    {
+      title: "Status",
+      data: [
+        { id: "1", name: "En cours" },
+        { id: "2", name: "Refusé" },
+        { id: "3", name: "Accepté" },
+      ],
+      group: "status",
+      displayType: "checkbox", // Example displayType (adjust according to your needs)
+      quickAccess: true,
+    },
+    {
+      title: "Collaborateurs",
+      data: collaborators,
+      group: "collaborateurs",
+      displayType: "SimpleAutocomplete",
+    },
+    {
+      title: "Type d'entretien",
+      data: [
+        { id: "1", name: "Performance" },
+        { id: " 2", name: "Increase" },
+      ],
+      group: "types_interview",
+      displayType: "checkbox",
+    },
+  ];
+
+  const updateSelectedFilterValues = (newValues) => {
+    setSelectedFilterValues(newValues);
+    console.log(selectedFilterValues);
+  };
+
+  const fetchFilteredData = async () => {
+    console.log("Selected Status:", selectedFilterValues.status);
+    const statusParam =
+      selectedFilterValues &&
+      selectedFilterValues.status &&
+      selectedFilterValues.status.length > 0
+        ? selectedFilterValues.status.join(",")
+        : "";
+
+    const interviewTypesParam =
+      selectedFilterValues &&
+      selectedFilterValues.types_interview &&
+      selectedFilterValues.types_interview.length > 0
+        ? selectedFilterValues.types_interview.join(",")
+        : "";
+    const collaborateursParam =
+      selectedFilterValues &&
+      selectedFilterValues.collaborateurs &&
+      selectedFilterValues.collaborateurs.length > 0
+        ? selectedFilterValues.collaborateurs.join(",")
+        : "";
+    console.log(collaborateursParam);
+
+    const requestUrl =
+      `objective/filters?page=${page}&size=${size}&name=${searchField}&year=${year}` +
+      `&interviewTypes=${interviewTypesParam}&status=${statusParam}&collaboratorsId=${collaborateursParam}`;
+
+    const responseData = await getRequest(requestUrl);
+    return responseData;
+  };
+
+  const {
+    isLoading,
+    isError,
+    error,
+    data,
+    isFetching,
+    isPreviousData,
+    refetch,
+  } = useQuery(
+    [
+      "objectives",
+      page,
+      searchField,
+      year,
+      selectedFilterValues.types_interview,
+      selectedFilterValues.status,
+    ],
+    fetchFilteredData,
+    {
       keepPreviousData: true,
-    });
+    }
+  );
+  useEffect(() => {
+    refetch();
+  }, [selectedFilterValues]);
 
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
@@ -96,7 +187,6 @@ const ShowObjectives = () => {
               <Typography variant="h5" component="h1" sx={{ mr: 2 }}>
                 Les Objectifs
               </Typography>
-              <NotificationDropdown></NotificationDropdown>
             </Box>
             <CustomDatePicker onSelectYear={handleYearChange} />
           </Box>
@@ -147,7 +237,12 @@ const ShowObjectives = () => {
             gap: { xs: "10px", sm: "16px" },
           }}
         >
-          <FiltreButton handleSearch={handleSearch} searchField={searchField} />
+          <FiltreButton
+            handleSearch={handleSearch}
+            searchField={searchField}
+            updateSelectedFilterValues={updateSelectedFilterValues}
+            filterData={filterData}
+          />
         </Box>
       </Grid>
 
@@ -173,9 +268,7 @@ const ShowObjectives = () => {
       ) : isError ? (
         <div style={{ alignSelf: "center" }}>Error: {error.message}</div>
       ) : data?.totalElements == 0 ? (
-        <div style={{ alignSelf: "center" }}>
-          Aucun objectif avec ce collaborateur{" "}
-        </div>
+        <div style={{ alignSelf: "center" }}>Aucun objectif </div>
       ) : (
         <Grid
           sx={{

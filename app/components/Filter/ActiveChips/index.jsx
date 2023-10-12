@@ -11,6 +11,8 @@ export default function ActiveChips({
   criteria
 }) {
   const getNameById = (filterId, filterGroup) => { // by amine nafid
+    // console.log(filters?.find(({ group }) => group === filterGroup)
+    // ?.data?.find(({ id }) => id === filterId)?.name)
     if (filterGroup === 'month') {
       return capitalizeFirstLetter(
         moment(selectedFilters[group][0]).format('MMMM'),
@@ -20,6 +22,7 @@ export default function ActiveChips({
       ?.find(({ group }) => group === filterGroup)
       ?.data?.find(({ id }) => id === filterId)?.name
   }
+
 
   return (
     <>
@@ -33,7 +36,13 @@ export default function ActiveChips({
                 onDelete={() => {
                   toggleFilter(id, index, true)
                 }}
-                sx={{ mb: 1 }}
+             
+                sx={{
+                  '& .MuiSvgIcon-root': {
+                    color: 'white', // Change the color to your desired color
+                  },
+                  mb:1
+                }}
               />
             ) : null,
           ),

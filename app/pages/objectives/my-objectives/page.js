@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import NotificationDropdown from "../../../components/notification";
 import TableObjectives from "@/app/components/tables/objectives";
-import FiltreButton from "../../../components/buttons/FiltreButton";
+import FiltreButton from "../../../components/buttons/filter/FiltreButton";
 import CustomPagination from "../../../components/pagination/CustomPagination";
 import LeftModal from "../../../components/modals";
 import FormObjective from "@/app/components/forms/objective/addObjective";
@@ -20,18 +20,23 @@ import { useRole } from "@/app/components/Role";
 const ShowObjectives = () => {
   let [page, setPage] = useState(0);
   const { role } = useRole();
+  let [year, setYear] = useState(new Date().getFullYear());
+
   const { isLoading, isError, error, data, isFetching, isPreviousData } =
     useQuery({
-      queryKey: ["objectives", page],
-      queryFn: () => getRequest("objective/collaborator/?page=" + page + "&size=3&id=2"),
+      queryKey: ["objectives", page,year],
+      queryFn: () => getRequest("objective/collaborator/2?page=" + page + "&size=3&year="+year),
       keepPreviousData: true,
     });
 
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
   };
-  console.log(role)
-
+  
+  const handleYearChange = (selectedYear) => {
+    setYear(selectedYear);
+    setPage(0);
+  };
   return (
     <Grid
       container
@@ -70,7 +75,7 @@ const ShowObjectives = () => {
               </Typography>
               <NotificationDropdown></NotificationDropdown>
             </Box>
-            <CustomDatePicker />
+            <CustomDatePicker onSelectYear={handleYearChange} />
           </Box>
 
           <Box

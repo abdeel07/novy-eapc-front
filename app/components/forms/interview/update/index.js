@@ -21,6 +21,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Textarea from "@mui/joy/Textarea";
 import Icon from "@mdi/react";
+import Typography from "@mui/material/Typography";
 import { mdiPlus, mdiMinus } from "@mdi/js";
 import TableObjectives from "@/app/components/tables/objectives";
 import CustomPagination from "@/app/components/pagination/CustomPagination";
@@ -43,6 +44,7 @@ const FormInterview = ({interview}) => {
       ? interview.quizzes.map((quiz) => ({
           id: quiz.id,
           question: quiz.question,
+          answer:quiz.answer,
         }))
       : [
           {
@@ -82,6 +84,17 @@ const FormInterview = ({interview}) => {
     setPage(newPage - 1);
   };
 
+  const { isLoading:isLoadingCollab, isError:isErrorCollab, error:errorCollab, data:dataCollab} =
+  useQuery({
+    queryKey: ["collaborator"],
+    queryFn: () => getRequest("collaborator/all"),
+    keepPreviousData: true,
+  });
+
+  const collaborators = dataCollab?.map((collaborator) => ({
+    id: collaborator.id, 
+    name: collaborator.firstName + ' ' + collaborator.lastName,
+  }));
 
   
 
@@ -246,9 +259,11 @@ const formik = useFormik({
                       name="collaboratorId"
                       onChange={formik.handleChange}
                     >
-                      <MenuItem value="1">Abde </MenuItem>
-                      <MenuItem value="2">Redouane</MenuItem>
-                      <MenuItem value="3">Youssef</MenuItem>
+                      {collaborators?.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.name}
+                                </MenuItem>
+                                 ))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -289,7 +304,15 @@ const formik = useFormik({
                         sm={12}
                         style={{ display: "flex", flexDirection: "column" }}
                       >
+                        
                         {questionFields.map((quiz, index) => (
+                          <Grid
+                          item
+                          xs={12}
+                          sm={12}
+                          style={{ display: "flex", flexDirection: "column" }}
+                          key={index}
+                        >
                           <Grid
                             item
                             xs={12}
@@ -307,6 +330,7 @@ const formik = useFormik({
                                 handleQuestionFieldChange(index, e.target.value)
                               }
                             />
+                          
                             {questionFields.length !== 1 && (
                               <IconButton
                                 style={{ marginLeft: "7px", padding: "10px" }}
@@ -320,6 +344,15 @@ const formik = useFormik({
                                 <Icon path={mdiPlus} size={0.8} />
                               </IconButton>
                             )}
+                            </Grid>
+                              {quiz.answer && <TextField
+                              fullWidth
+                              label={"Answer " + (index + 1)}
+                              placeholder="..."
+                              value={quiz.answer}
+                              style={{ marginBottom: "8px" }}
+                             disabled
+                            />}
                           </Grid>
                         ))}
                       </Grid>

@@ -21,15 +21,28 @@ import { useFormik } from 'formik';
 import React from 'react'
 import { useState } from 'react';
 import { Alert, AlertTitle, Snackbar } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { getRequest } from '@/app/utils/api';
 
-function UpdateObjective({ objective, handleCloseModal, role }) {
+function UpdateObjective({ objective, handleCloseModal ,role}) {
 
     const mutation = useMutation((formData) => putRequest('objective/' + objective?.id, formData));
-
+    
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
     const [showErrorAlert, setShowErrorAlert] = useState(false);
 
     const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
+    const { isLoading:isLoadingCollab, isError:isErrorCollab, error:errorCollab, data:dataCollab} =
+    useQuery({
+      queryKey: ["collaborator"],
+      queryFn: () => getRequest("collaborator/all"),
+      keepPreviousData: true,
+    });
+  
+    const collaborators = dataCollab?.map((collaborator) => ({
+      id: collaborator.id, 
+      name: collaborator.firstName + ' ' + collaborator.lastName,
+    }));
 
     // Handle form submission
     const handleSubmit = async (values) => {
@@ -44,8 +57,8 @@ function UpdateObjective({ objective, handleCloseModal, role }) {
             setShowErrorAlert(true);
         }
     };
-
-    console.log(objective?.startDate)
+    
+   
 
     const formik = useFormik({
         initialValues: {
@@ -132,9 +145,11 @@ function UpdateObjective({ objective, handleCloseModal, role }) {
                                     onChange={formik.handleChange}
                                     value={formik.values.collaboratorId}
                                 >
-                                    <MenuItem value='1'>Abdou </MenuItem>
-                                    <MenuItem value='2'>Redouane</MenuItem>
-                                    <MenuItem value='3'>Youssef</MenuItem>
+                                     {collaborators?.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>
+                                    {item.name}
+                                </MenuItem>
+                                 ))}
 
                                 </Select>
                             </FormControl>
@@ -145,7 +160,7 @@ function UpdateObjective({ objective, handleCloseModal, role }) {
                                     <DatePicker required name='startDate' fullWidth label="Date debut"
                                         onChange={(date) => formik.setFieldValue('startDate', date ? date : null)}
                                         value={dayjs(formik.values.startDate)}
-                                    />
+                                       />
                                 </LocalizationProvider>
                                 {formik.touched.startDate && formik.errors.startDate && <FormHelperText>{formik.errors.startDate}</FormHelperText>}
                             </FormControl>
@@ -155,8 +170,8 @@ function UpdateObjective({ objective, handleCloseModal, role }) {
                             <FormControl fullWidth error={formik.touched.endDate && formik.errors.endDate}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker required name='endDate' label="Date fin" onChange={(date) => formik.setFieldValue('endDate', date, true)}
-                                        value={dayjs(formik.values.endDate)}
-                                    />
+                                       value={dayjs(formik.values.endDate)}
+                                         />
                                 </LocalizationProvider>
                                 {formik.touched.endDate && formik.errors.endDate && <FormHelperText>{formik.errors.endDate}</FormHelperText>}
                             </FormControl>

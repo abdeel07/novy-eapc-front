@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import InterviewTable from "../../../components/tables/interview";
-import FiltreButton from "../../../components/buttons/FiltreButton";
+import FiltreButton from "../../../components/buttons/filter/FiltreButton";
 import CustomPagination from "../../../components/pagination/CustomPagination";
 import LeftModal from "../../../components/modals";
 import CustomDatePicker from "../../../components/datePicker";
@@ -21,6 +21,46 @@ const AllInterviews = () => {
   const { role } = useRole();
   const [domLoaded, setDomLoaded] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedFilterValues, setSelectedFilterValues] = useState({});
+  let [size, setSize] = useState(3);
+  let [year, setYear] = useState(new Date().getFullYear());
+  let [searchField, setSearchField] = useState("");
+  const updateSelectedFilterValues = (newValues) => {
+    setSelectedFilterValues(newValues);
+    console.log(selectedFilterValues);
+  };
+  const { isLoading:isLoadingCollab, isError:isErrorCollab, error:errorCollab, data:dataCollab} =
+  useQuery({
+    queryKey: ["collaborator"],
+    queryFn: () => getRequest("collaborator/all"),
+    keepPreviousData: true,
+  });
+
+  const collaborators = dataCollab?.map((collaborator) => ({
+    id: collaborator.id, 
+    name: collaborator.firstName + ' ' + collaborator.lastName,
+  }));
+  
+  const filterData = [
+    {  
+      title: "Type d'entretien",
+      data: [
+        { id: "1", name: "Performance" },
+        { id: " 2", name: "Increase" },
+      
+      ],
+      group: "types_interview",
+      displayType: "checkbox", 
+      quickAccess: true, 
+    },
+    {
+      title: "Collaborateurs",
+      data: collaborators,
+      group: "collaborateurs",
+      displayType: "SimpleAutocomplete", 
+    },
+   
+    ];
 
   useEffect(() => {
     setDomLoaded(true);
@@ -29,22 +69,53 @@ const AllInterviews = () => {
 
   let [page, setPage] = useState(0);
 
-  const { isLoading, isError, error, data, isFetching, isPreviousData ,refetch} =
-    useQuery({
-      queryKey: ["interviews", page,selectedYear],
-      queryFn: () => getRequest("interview/date/"+selectedYear+"?page=" + page + "&size=3"),
+  const fetchFilteredData = async () => {
+
+
+
+const interviewTypesParam = selectedFilterValues && selectedFilterValues.types_interview && selectedFilterValues.types_interview.length > 0
+  ? selectedFilterValues.types_interview.join(',')
+  : '';
+  const collaborateursParam = selectedFilterValues && selectedFilterValues.collaborateurs && selectedFilterValues.collaborateurs.length > 0
+  ? selectedFilterValues.collaborateurs.join(',')
+  : '';
+console.log(collaborateursParam);
+   
+   
+    
+
+    const requestUrl =
+      `interview/filters?page=${page}&size=${size}&name=${searchField}&year=${year}` +
+      `&interviewTypes=${interviewTypesParam}&collaboratorsId=${collaborateursParam}`;
+
+    const responseData = await getRequest(requestUrl);
+    return responseData;
+  };
+
+  const { isLoading, isError, error, data, isFetching, isPreviousData, refetch } = useQuery(
+    ["objectives", page, searchField, year, selectedFilterValues.types_interview],
+    fetchFilteredData,
+    {
       keepPreviousData: true,
-    });
+    }
+  );
+  useEffect(()=>{
+      refetch()
+  },[selectedFilterValues])
 
-    const handleYearChange = (year) => {
+  const handleYearChange = (selectedYear) => {
+    setYear(selectedYear);
+    setPage(0);
+  };
 
-      setSelectedYear(year);
-      console.log(year)
-      refetch({ queryKey: ["interviews", page, selectedYear] });
-    };
 
   const handleChange = (event, newPage) => {
     setPage(newPage - 1);
+  };
+
+  const handleSearch = (value) => {
+    setSearchField(value);
+    setPage(0);
   };
 
   return (
@@ -137,7 +208,7 @@ const AllInterviews = () => {
                 gap: { xs: "10px", sm: "16px" },
               }}
             >
-              <FiltreButton />
+             <FiltreButton handleSearch={handleSearch} searchField={searchField} updateSelectedFilterValues={updateSelectedFilterValues} filterData={filterData} />
             </Box>
           </Grid>
 
@@ -166,6 +237,10 @@ const AllInterviews = () => {
             </div>
           ) : isError ? (
             <div>Error: {error.message}</div>
+          ) : data?.totalElements == 0 ? (
+            <div style={{ alignSelf: "center" }}>
+              Aucun entretien{" "}
+            </div>
           ) : (
             <Grid
               sx={{

@@ -1,37 +1,40 @@
-import React from 'react'
-import { Button } from '@mui/material'
-const StatusButton = ({textButton}) => {
+import React from 'react';
+import Paper from '@mui/material/Paper';
+
+const StatusButton = ({ text }) => {
   let backgroundColor, textColor;
 
-  if (textButton === 'En cours') {
+  if (text === 'En cours') {
     backgroundColor = 'rgba(123, 175, 255, 0.2)';
     textColor = 'rgb(123, 175, 255)';
-  } else if (textButton === 'Accepté') {
+  } else if (text === 'Accepté') {
     backgroundColor = 'rgba(86, 225, 86, 0.2)';
     textColor = 'rgb(69, 145, 69)';
-  } else if (textButton === 'Refusé') {
+  } else if (text === 'Refusé') {
     backgroundColor = 'rgba(255, 0, 0, 0.2)';
     textColor = 'rgb(255, 0, 0)';
-  } 
+  }
+
   return (
-    <Button
-        type='submit'
-        variant='contained'
-        size='small' // Set the size to small
-        
-        style={{
+    <Paper
+      elevation={0} // No elevation to make it flat
+      sx={{
         backgroundColor: backgroundColor,
         color: textColor,
         borderRadius: "6px",
-        padding:"0px 20px",
-        height:"32px",
-        width:"90%",
-        textTransform: "none", // Set the text transform to none to keep lowercase letters
-        }}
-        >
-       {textButton}
- </Button>
-  )
-}
+        padding: "6px 20px",
+        height: "26px",
+        width: "90%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
 
-export default StatusButton
+        fontSize: "14px",
+      }}
+    >
+      {text}
+    </Paper>
+  );
+};
+
+export default StatusButton;

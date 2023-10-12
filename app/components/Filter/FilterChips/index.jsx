@@ -24,19 +24,26 @@ export default function FilterChips({
           onClick={() =>
             toggleFilterChips(item.id, getQuickAccessData().group)
           }
-          // color={
-          //   selectedFilters && selectedFilters[criteria] && Array.isArray(selectedFilters[criteria]) && selectedFilters[criteria].includes(item.id)
-          //     ? 'primary'
-          //     : 'default'
-          // }
+         
           sx={{
             minWidth: '80px',
             mb: 1,
+            color:
+            selectedFilters && selectedFilters[criteria] && Array.isArray(selectedFilters[criteria]) && selectedFilters[criteria].includes(item.id)
+            ? ' white'
+            : 'default',
+            
             backgroundColor:
               selectedFilters && selectedFilters[criteria] && Array.isArray(selectedFilters[criteria]) && selectedFilters[criteria].includes(item.id)
               ? ' rgb(255, 6, 126)'
-              : 'default'
-            
+              : 'rgb(221, 247, 255)',
+              '&:hover': {
+                backgroundColor:
+                selectedFilters && selectedFilters[criteria] && Array.isArray(selectedFilters[criteria]) && selectedFilters[criteria].includes(item.id)
+                ? ' rgb(255, 6, 126)'
+                : 'rgb(221, 247, 255)'
+              },
+             
           }}
         />
       ))}

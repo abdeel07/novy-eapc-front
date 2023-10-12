@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'next-i18next'
 import { getNodeByDisplayType } from '../FilterViewHelper'
-
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 export default function FilterCriteriaList({
   filters,
   toggleFilter,
@@ -22,8 +22,20 @@ export default function FilterCriteriaList({
   const updateCheckedState = (index, group) => {
     toggleFilter(index, group)
   }
-
+  const badgeTheme = createTheme({
+    components: {
+      MuiBadge: {
+        styleOverrides: {
+          badge: {
+            backgroundColor: 'rgb(255, 6, 126)',
+            color: 'white',
+          },
+        },
+      },
+    },
+  });
   return (
+    <ThemeProvider theme={badgeTheme}>
     <Grid
       container
       flexDirection="column"
@@ -53,8 +65,9 @@ export default function FilterCriteriaList({
               <>
                 <Accordion key={group} elevation={0} sx={{ py: 1 }}>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="h6" component="div">
+                    <Typography variant="h6" component="div" >
                       {t(title)}
+                     
                     </Typography>
                     {selectedFilters[group] &&
                       selectedFilters[group].length > 0 ? (
@@ -103,19 +116,21 @@ export default function FilterCriteriaList({
           <Button
             variant="outlined"
             size="large"
-            color="inherit"
+           
             onClick={onReset}
+            style={{borderColor:"rgb(255, 6, 126)",color:"rgb(255, 6, 126)"}} 
           >
             {t('erase')}
           </Button>
         </Grid>
         <Grid item>
-          <Button variant="contained" size="large" onClick={onFilter}>
+          <Button variant="contained" size="large" style={{backgroundColor:"rgb(255, 6, 126)"}} onClick={onFilter}>
             {t('filter')}
           </Button>
         </Grid>
       </Grid>
     </Grid>
+    </ThemeProvider>
   )
 }
 FilterCriteriaList.propTypes = {

@@ -19,6 +19,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Textarea from '@mui/joy/Textarea';
 import { useRole } from '@/app/components/Role'
+import { useQuery } from '@tanstack/react-query'
+
 
 // ** Icons Imports
 
@@ -27,12 +29,26 @@ import { postRequest } from '@/app/utils/api';
 import { useFormik } from 'formik';
 import { Alert, AlertTitle, FormHelperText, Snackbar } from '@mui/material'
 
+
+
+
 const FormObjective = ({ handleCloseModal }) => {
-  const { role } = useRole()
+  const {role}=useRole()
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   const { vertical, horizontal } = { vertical: 'bottom', horizontal: 'center' };
+  const { isLoading:isLoadingCollab, isError:isErrorCollab, error:errorCollab, data:dataCollab} =
+  useQuery({
+    queryKey: ["collaborator"],
+    queryFn: () => getRequest("collaborator/all"),
+    keepPreviousData: true,
+  });
+
+  const collaborators = dataCollab?.map((collaborator) => ({
+    id: collaborator.id, 
+    name: collaborator.firstName + ' ' + collaborator.lastName,
+  }));
 
   // Define the mutation using useMutation
   const mutation = useMutation((formData) => postRequest('objective/', formData));
@@ -53,7 +69,7 @@ const FormObjective = ({ handleCloseModal }) => {
   };
 
   const formik = useFormik({
-    initialValues: { title: '', interviewType: '', collaboratorId: role == "user" ? '2' : '', startDate: null, endDate: null, achievement: '', status: role == "user" ? 'En cours' : '', comment: '' },
+    initialValues: { title: '', interviewType: '', collaboratorId:role=="user"? '2':'', startDate: null, endDate: null, achievement: '', status:role=="user"? 'En cours':'', comment: '' },
 
     validate: (values) => {
       const errors = {};
@@ -119,34 +135,38 @@ const FormObjective = ({ handleCloseModal }) => {
                   value={formik.values.interviewType}
                 >
                   <MenuItem value='Performance'>Performance</MenuItem>
-                  <MenuItem value='Increase'>Evaluation</MenuItem>
+                  <MenuItem value='Increase'>Augmentation</MenuItem>
 
                 </Select>
               </FormControl>
             </Grid>
-            {role === "admin" && (
-              <Grid item xs={12} sm={12}>
-                <FormControl fullWidth>
-                  <InputLabel >Affecté à</InputLabel>
-                  <Select
-                    required
-                    label='Country'
-                    defaultValue=''
-                    id='form-layouts-separator-select'
-                    labelId='form-layouts-separator-select-label'
-                    name='collaboratorId'
-                    onChange={formik.handleChange}
-                    value={formik.values.collaboratorId}
-                  >
-                    <MenuItem value='1'>Abdou </MenuItem>
-                    <MenuItem value='2'>Redouane</MenuItem>
-                    <MenuItem value='3'>Youssef</MenuItem>
+            {role==="admin" && (
+                  <Grid item xs={12} sm={12}>
+                  <FormControl fullWidth>
+                    <InputLabel >Affecté à</InputLabel>
+                    <Select
+                      required
+                      label='Country'
+                      defaultValue=''
+                      id='form-layouts-separator-select'
+                      labelId='form-layouts-separator-select-label'
+                      name='collaboratorId'
+                      onChange={formik.handleChange}
+                      value={formik.values.collaboratorId}
+                    >
+                       {collaborators?.map((item) => (
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.name}
+                          </MenuItem>
+                      ))}
+                    
+                     
 
-                  </Select>
-                </FormControl>
-              </Grid>
+                    </Select>
+                  </FormControl>
+                </Grid>
             )}
-
+            
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth error={formik.touched.startDate && formik.errors.startDate}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -172,27 +192,27 @@ const FormObjective = ({ handleCloseModal }) => {
                 value={formik.values.achievement} />
               {formik.touched.achievement && formik.errors.achievement && <FormHelperText style={{ color: 'red' }}>{formik.errors.achievement}</FormHelperText>}
             </Grid>
-            {role === "admin" && (
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel >Status</InputLabel>
-                  <Select
-                    required
-                    label='Country'
-                    defaultValue=''
-                    id='form-layouts-separator-select'
-                    labelId='form-layouts-separator-select-label'
-                    name='status'
-                    onChange={formik.handleChange}
-                    value={formik.values.status}
-                  >
-                    <MenuItem value='En cours'>En cours</MenuItem>
-                    <MenuItem value='Refusé'>Réfusé</MenuItem>
-                    <MenuItem value='Accepté'>Accepté</MenuItem>
+            {role==="admin" && (
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel >Status</InputLabel>
+                <Select
+                  required
+                  label='Country'
+                  defaultValue=''
+                  id='form-layouts-separator-select'
+                  labelId='form-layouts-separator-select-label'
+                  name='status'
+                  onChange={formik.handleChange}
+                  value={formik.values.status}
+                >
+                  <MenuItem value='En cours'>En cours</MenuItem>
+                  <MenuItem value='Refusé'>Réfusé</MenuItem>
+                  <MenuItem value='Accepté'>Accepté</MenuItem>
 
-                  </Select>
-                </FormControl>
-              </Grid>
+                </Select>
+              </FormControl>
+            </Grid>
             )}
 
             <Grid item xs={12} sm={12}>
